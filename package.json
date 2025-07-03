@@ -5,7 +5,8 @@
   "main": "js/main.js",
   "scripts": {
     "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css",
-    "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch"
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
+    "build:prod": "tailwindcss -i ./css/input.css -o ./css/style.css --minify"
   },
   "keywords": [
     "prompt-engineering",
