@@ -1,7 +1,14 @@
 import { getCurrentPrompt, state } from "./state.js";
 import { estimateTokens } from "./utils.js";
+import { Block, BlockType, Prompt, blockTypes } from "./types.js";
 
-export const blockConfig = {
+interface BlockConfig {
+  icon: string;
+  color: string;
+  name: string;
+}
+
+export const blockConfig: Record<BlockType, BlockConfig> = {
   Instruction: { icon: "article", color: "blue", name: "Instruction" },
   Context: { icon: "source", color: "purple", name: "Context" },
   Constraint: { icon: "gavel", color: "red", name: "Constraint" },
@@ -9,23 +16,41 @@ export const blockConfig = {
   Example: { icon: "lightbulb", color: "yellow", name: "Example" },
 };
 
-const editorViewEl = document.getElementById("editor-view");
-const templatesViewEl = document.getElementById("templates-view");
-const noPromptViewEl = document.getElementById("no-prompt-view");
-const editorContentEl = document.getElementById("editor-content");
-const footerBarEl = document.getElementById("footer-bar");
+const editorViewEl = document.getElementById("editor-view") as HTMLDivElement;
+const templatesViewEl = document.getElementById(
+  "templates-view"
+) as HTMLDivElement;
+const noPromptViewEl = document.getElementById(
+  "no-prompt-view"
+) as HTMLDivElement;
+const editorContentEl = document.getElementById(
+  "editor-content"
+) as HTMLDivElement;
+const footerBarEl = document.getElementById("footer-bar") as HTMLElement;
 
-const canvasEl = document.getElementById("canvas");
-const canvasPlaceholderEl = document.getElementById("canvas-placeholder");
-const blockLibraryEl = document.getElementById("block-library");
-const statsCounterEl = document.getElementById("stats-counter");
-const previewTextEl = document.getElementById("preview-text");
-const addBlockButtonsEl = document.getElementById("add-block-buttons");
-const promptTitleInputEl = document.getElementById("prompt-title-input");
+const canvasEl = document.getElementById("canvas") as HTMLDivElement;
+const canvasPlaceholderEl = document.getElementById(
+  "canvas-placeholder"
+) as HTMLDivElement;
+const blockLibraryEl = document.getElementById(
+  "block-library"
+) as HTMLDivElement;
+const statsCounterEl = document.getElementById(
+  "stats-counter"
+) as HTMLDivElement;
+const previewTextEl = document.getElementById("preview-text") as HTMLPreElement;
+const addBlockButtonsEl = document.getElementById(
+  "add-block-buttons"
+) as HTMLDivElement;
+const promptTitleInputEl = document.getElementById(
+  "prompt-title-input"
+) as HTMLInputElement;
 const templatesListContainerEl = document.getElementById(
   "templates-list-container"
-);
-export const rightPreviewPaneEl = document.getElementById("right-preview-pane");
+) as HTMLDivElement;
+export const rightPreviewPaneEl = document.getElementById(
+  "right-preview-pane"
+) as HTMLElement;
 
 export function render() {
   renderTheme();
@@ -67,7 +92,7 @@ function renderTemplatesView() {
   const sortedPrompts = [...state.prompts].sort((a, b) => {
     const dateA = new Date(a.updatedAt || a.createdAt);
     const dateB = new Date(b.updatedAt || b.createdAt);
-    return dateB - dateA;
+    return dateB.getTime() - dateA.getTime();
   });
 
   if (sortedPrompts.length === 0) {
@@ -84,7 +109,7 @@ function renderTemplatesView() {
     .join("");
 }
 
-function createTemplateCard(prompt) {
+function createTemplateCard(prompt: Prompt): string {
   const date = new Date(prompt.updatedAt || prompt.createdAt).toLocaleString();
   const blockSummary =
     prompt.blocks.map((b) => b.type.charAt(0)).join(", ") || "Empty";
@@ -114,6 +139,8 @@ function createTemplateCard(prompt) {
 function renderTheme() {
   const html = document.documentElement;
   const themeToggleIcon = document.querySelector("#theme-toggle span");
+  if (!themeToggleIcon) return;
+
   if (state.theme === "dark") {
     html.classList.add("dark");
     themeToggleIcon.textContent = "light_mode";
@@ -124,11 +151,11 @@ function renderTheme() {
 }
 
 function renderBlockLibrary() {
-  blockLibraryEl.innerHTML = Object.keys(blockConfig)
+  blockLibraryEl.innerHTML = (blockTypes as readonly string[])
     .map(
       (type) => `
         <div class="block-card bg-bkg p-2 rounded-md border border-gray-300 dark:border-gray-600 cursor-grab text-center" draggable="true" data-block-type="${type}" title="Drag to add a ${type} block">
-            <span class="material-icons text-${blockConfig[type].color}-500">${blockConfig[type].icon}</span>
+            <span class="material-icons text-${blockConfig[type as BlockType].color}-500">${blockConfig[type as BlockType].icon}</span>
             <p class="text-xs font-medium">${type}</p>
         </div>
     `
@@ -150,7 +177,7 @@ export function renderCanvas() {
   });
 }
 
-function createBlockElement(block) {
+function createBlockElement(block: Block): HTMLDivElement {
   const config = blockConfig[block.type];
   const element = document.createElement("div");
   element.className =
@@ -191,11 +218,11 @@ function createBlockElement(block) {
 function renderAddBlockButtons() {
   addBlockButtonsEl.innerHTML = `
         <span class="text-sm font-medium mr-2">Add Block:</span>
-        ${Object.keys(blockConfig)
+        ${(blockTypes as readonly string[])
           .map(
             (type) => `
             <button class="add-block-btn flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700" data-block-type="${type}" title="Add a new ${type} block">
-                <span class="material-icons text-base text-${blockConfig[type].color}-500">${blockConfig[type].icon}</span>
+                <span class="material-icons text-base text-${blockConfig[type as BlockType].color}-500">${blockConfig[type as BlockType].icon}</span>
                 ${type}
             </button>
         `

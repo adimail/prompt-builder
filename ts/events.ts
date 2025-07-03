@@ -25,48 +25,47 @@ import {
   renderPreview,
 } from "./ui.js";
 import { debounce, downloadJson } from "./utils.js";
+import { BlockType } from "./types.js";
 
-const canvasEl = document.getElementById("canvas");
-let draggedElement = null;
+const canvasEl = document.getElementById("canvas") as HTMLDivElement;
+let draggedElement: HTMLElement | null = null;
 
 export function initializeEventListeners() {
   document
     .getElementById("theme-toggle")
-    .addEventListener("click", handleThemeToggle);
+    ?.addEventListener("click", handleThemeToggle);
   document
     .getElementById("toggle-preview")
-    .addEventListener("click", handlePreviewToggle);
+    ?.addEventListener("click", handlePreviewToggle);
   document
     .getElementById("block-library")
-    .addEventListener("dragstart", handleSidebarDragStart);
+    ?.addEventListener("dragstart", handleSidebarDragStart);
   document
     .getElementById("add-block-buttons")
-    .addEventListener("click", handleAddBlockClick);
+    ?.addEventListener("click", handleAddBlockClick);
   document.body.addEventListener("click", handleCopyPrompt);
 
   document
     .getElementById("nav-templates")
-    .addEventListener("click", handleNavTemplates);
+    ?.addEventListener("click", handleNavTemplates);
   document
     .getElementById("new-prompt-btn")
-    .addEventListener("click", handleNewPrompt);
+    ?.addEventListener("click", handleNewPrompt);
   document
     .getElementById("prompt-title-input")
-    .addEventListener("input", debounce(handlePromptTitleInput, 300));
+    ?.addEventListener("input", debounce(handlePromptTitleInput, 300));
   document
     .getElementById("download-prompt-btn")
-    .addEventListener("click", handleDownloadPrompt);
+    ?.addEventListener("click", handleDownloadPrompt);
 
   const templatesView = document.getElementById("templates-view");
-  templatesView.addEventListener("click", handleTemplatesViewClick);
-  document
-    .getElementById("import-prompts-btn")
-    .addEventListener("click", () =>
-      document.getElementById("import-file-input").click()
-    );
+  templatesView?.addEventListener("click", handleTemplatesViewClick);
+  document.getElementById("import-prompts-btn")?.addEventListener("click", () =>
+    (document.getElementById("import-file-input") as HTMLInputElement)?.click()
+  );
   document
     .getElementById("import-file-input")
-    .addEventListener("change", handleImportFile);
+    ?.addEventListener("change", handleImportFile);
 
   canvasEl.addEventListener("input", debounce(handleCanvasInput, 250));
   canvasEl.addEventListener("click", handleCanvasClick);
@@ -103,8 +102,9 @@ function handleNewPrompt() {
   saveState();
 }
 
-function handlePromptTitleInput(e) {
-  updateCurrentPromptName(e.target.value);
+function handlePromptTitleInput(e: Event) {
+  const target = e.target as HTMLInputElement;
+  updateCurrentPromptName(target.value);
   saveState();
 }
 
@@ -118,14 +118,17 @@ function handleDownloadPrompt() {
   downloadJson(prompt, `${sanitizedName}.json`);
 }
 
-function handleTemplatesViewClick(e) {
-  const button = e.target.closest("button[data-action]");
-  const backButton = e.target.closest("#back-to-editor-btn");
-  const exportButton = e.target.closest("#export-prompts-btn");
+function handleTemplatesViewClick(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const button = target.closest("button[data-action]");
+  const backButton = target.closest("#back-to-editor-btn");
+  const exportButton = target.closest("#export-prompts-btn");
 
   if (button) {
-    const action = button.dataset.action;
-    const id = button.dataset.id;
+    const action = button.getAttribute("data-action");
+    const id = button.getAttribute("data-id");
+    if (!id) return;
+
     if (action === "load") {
       loadPrompt(id);
       setView("editor");
@@ -149,8 +152,9 @@ function handleTemplatesViewClick(e) {
   }
 }
 
-async function handleImportFile(e) {
-  const file = e.target.files[0];
+async function handleImportFile(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
   if (!file) return;
 
   const text = await file.text();
@@ -165,7 +169,7 @@ async function handleImportFile(e) {
     alert("Import failed. The file is not valid JSON.");
     console.error("Import error:", err);
   }
-  e.target.value = "";
+  input.value = "";
 }
 
 function handleExportPrompts() {
@@ -179,23 +183,31 @@ function handleExportPrompts() {
   );
 }
 
-function handleCanvasInput(e) {
-  if (e.target.tagName === "TEXTAREA") {
-    const blockId = e.target.closest(".prompt-block").dataset.blockId;
-    updateBlockContent(blockId, e.target.value);
-    saveCurrentPrompt();
-    renderPreview();
-    renderFooter();
-    saveState();
+function handleCanvasInput(e: Event) {
+  const target = e.target as HTMLElement;
+  if (target.tagName === "TEXTAREA") {
+    const blockId = (target.closest(".prompt-block") as HTMLElement)?.dataset
+      .blockId;
+    if (blockId) {
+      updateBlockContent(blockId, (target as HTMLTextAreaElement).value);
+      saveCurrentPrompt();
+      renderPreview();
+      renderFooter();
+      saveState();
+    }
   }
 }
 
-function handleCanvasClick(e) {
-  const actionButton = e.target.closest("button[data-action]");
+function handleCanvasClick(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const actionButton = target.closest("button[data-action]");
   if (!actionButton) return;
 
-  const blockId = actionButton.closest(".prompt-block").dataset.blockId;
-  const action = actionButton.dataset.action;
+  const blockId = (actionButton.closest(".prompt-block") as HTMLElement)
+    ?.dataset.blockId;
+  const action = actionButton.getAttribute("data-action");
+
+  if (!blockId) return;
 
   if (action === "delete") {
     deleteBlock(blockId);
@@ -212,19 +224,21 @@ function handleCanvasClick(e) {
   }
 }
 
-function handleAddBlockClick(e) {
-  const button = e.target.closest(".add-block-btn");
+function handleAddBlockClick(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const button = target.closest(".add-block-btn");
   if (!button) return;
 
-  const blockType = button.dataset.blockType;
+  const blockType = button.getAttribute("data-block-type") as BlockType;
   addBlock(blockType);
   render();
   saveState();
-  canvasEl.lastElementChild?.querySelector("textarea")?.focus();
+  (canvasEl.lastElementChild?.querySelector("textarea") as HTMLElement)?.focus();
 }
 
-async function handleCopyPrompt(e) {
-  const button = e.target.closest(".copy-prompt-btn");
+async function handleCopyPrompt(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const button = target.closest(".copy-prompt-btn") as HTMLButtonElement;
   if (!button) return;
 
   const prompt = getCurrentPrompt();
@@ -253,45 +267,51 @@ async function handleCopyPrompt(e) {
   }
 }
 
-function handleSidebarDragStart(e) {
-  if (e.target.classList.contains("block-card")) {
-    e.dataTransfer.setData("text/plain", e.target.dataset.blockType);
-    e.dataTransfer.effectAllowed = "copy";
+function handleSidebarDragStart(e: DragEvent) {
+  const target = e.target as HTMLElement;
+  if (target.classList.contains("block-card")) {
+    e.dataTransfer?.setData("text/plain", target.dataset.blockType!);
+    if (e.dataTransfer) e.dataTransfer.effectAllowed = "copy";
   }
 }
 
-function handleCanvasDragStart(e) {
-  if (e.target.classList.contains("prompt-block")) {
-    draggedElement = e.target;
-    e.dataTransfer.setData("text/plain", e.target.dataset.blockId);
-    e.dataTransfer.effectAllowed = "move";
+function handleCanvasDragStart(e: DragEvent) {
+  const target = e.target as HTMLElement;
+  if (target.classList.contains("prompt-block")) {
+    draggedElement = target;
+    e.dataTransfer?.setData("text/plain", target.dataset.blockId!);
+    if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
     setTimeout(() => {
-      draggedElement.classList.add("opacity-50");
+      draggedElement?.classList.add("opacity-50");
     }, 0);
   }
 }
 
-function handleCanvasDragOver(e) {
+function handleCanvasDragOver(e: DragEvent) {
   e.preventDefault();
-  const target = e.target.closest(".prompt-block");
-  if (target && target !== draggedElement) {
+  const target = (e.target as HTMLElement).closest(
+    ".prompt-block"
+  ) as HTMLElement;
+  if (target && target !== draggedElement && draggedElement) {
     const rect = target.getBoundingClientRect();
     const isAfter = e.clientY > rect.top + rect.height / 2;
     if (isAfter) {
-      target.parentNode.insertBefore(draggedElement, target.nextSibling);
+      target.parentNode?.insertBefore(draggedElement, target.nextSibling);
     } else {
-      target.parentNode.insertBefore(draggedElement, target);
+      target.parentNode?.insertBefore(draggedElement, target);
     }
   }
 }
 
-function handleCanvasDrop(e) {
+function handleCanvasDrop(e: DragEvent) {
   e.preventDefault();
-  const blockType = e.dataTransfer.getData("text/plain");
+  const blockType = e.dataTransfer?.getData("text/plain") as BlockType;
   const prompt = getCurrentPrompt();
   if (!prompt) return;
 
-  const targetBlock = e.target.closest(".prompt-block");
+  const targetBlock = (e.target as HTMLElement).closest(
+    ".prompt-block"
+  ) as HTMLElement;
   const targetIndex = targetBlock
     ? prompt.blocks.findIndex((b) => b.id === targetBlock.dataset.blockId)
     : undefined;
@@ -299,18 +319,17 @@ function handleCanvasDrop(e) {
   if (blockConfig[blockType]) {
     addBlock(blockType, targetIndex);
   } else if (draggedElement) {
-    const draggedId = draggedElement.dataset.blockId;
-    const newTargetId = draggedElement.nextSibling
-      ? draggedElement.nextSibling.dataset.blockId
-      : null;
-    reorderBlocks(draggedId, newTargetId);
+    const draggedId = draggedElement.dataset.blockId!;
+    const newTargetId = (draggedElement.nextSibling as HTMLElement)?.dataset
+      .blockId;
+    reorderBlocks(draggedId, newTargetId || null);
   }
 
   render();
   saveState();
 }
 
-function handleCanvasDragEnd(e) {
+function handleCanvasDragEnd() {
   if (draggedElement) {
     draggedElement.classList.remove("opacity-50");
     draggedElement = null;

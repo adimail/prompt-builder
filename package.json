@@ -1,12 +1,15 @@
 {
   "name": "prompt-builder",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "A client-side, single-page application for building and testing LLM prompts.",
   "main": "js/main.js",
   "scripts": {
     "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css",
     "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
-    "build:prod": "tailwindcss -i ./css/input.css -o ./css/style.css --minify"
+    "build:ts": "tsc",
+    "watch:ts": "tsc --watch",
+    "build": "npm run build:ts && npm run build:css",
+    "build:prod": "npm run build:ts && tailwindcss -i ./css/input.css -o ./css/style.css --minify"
   },
   "keywords": [
     "prompt-engineering",
@@ -15,9 +18,11 @@
     "vanilla-js",
     "tailwind"
   ],
-  "author": "Your Name",
+  "author": "Aditya Godse",
   "license": "MIT",
   "devDependencies": {
-    "tailwindcss": "^3.4.1"
+    "@types/node": "^24.0.10",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3"
   }
 }

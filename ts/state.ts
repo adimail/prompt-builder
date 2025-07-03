@@ -1,8 +1,9 @@
 import { generateId } from "./utils.js";
+import { AppState, Prompt, Block, BlockType } from "./types.js";
 
 const LOCAL_STORAGE_KEY = "promptBuilderState";
 
-function createNewPromptObject(name = "Untitled Prompt") {
+function createNewPromptObject(name: string = "Untitled Prompt"): Prompt {
   return {
     id: generateId(),
     name: name,
@@ -12,32 +13,35 @@ function createNewPromptObject(name = "Untitled Prompt") {
   };
 }
 
-const defaultState = {
+const defaultState: AppState = {
   theme: "light",
   currentView: "editor",
   prompts: [],
   currentPromptId: null,
 };
 
-export let state = {};
+export let state: AppState = {} as AppState;
 
-export function getCurrentPrompt() {
+export function getCurrentPrompt(): Prompt | undefined {
   return state.prompts.find((p) => p.id === state.currentPromptId);
 }
 
 export function loadState() {
   const savedStateJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
-  let savedState;
+  let savedState: any;
   if (savedStateJSON) {
     savedState = JSON.parse(savedStateJSON);
   }
 
   if (savedState && savedState.currentPrompt && !savedState.prompts) {
-    const migratedState = {
+    const migratedState: AppState = {
       theme: savedState.theme || "light",
       currentView: "editor",
       prompts: [
-        { ...savedState.currentPrompt, updatedAt: savedState.currentPrompt.createdAt },
+        {
+          ...savedState.currentPrompt,
+          updatedAt: savedState.currentPrompt.createdAt,
+        },
       ],
       currentPromptId: savedState.currentPrompt.id,
     };
@@ -64,11 +68,11 @@ export function saveState() {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
 }
 
-export function setView(view) {
+export function setView(view: "editor" | "templates") {
   state.currentView = view;
 }
 
-export function createNewPrompt(name) {
+export function createNewPrompt(name: string): Prompt {
   const newPrompt = createNewPromptObject(name);
   state.prompts.unshift(newPrompt);
   state.currentPromptId = newPrompt.id;
@@ -82,14 +86,14 @@ export function saveCurrentPrompt() {
   }
 }
 
-export function loadPrompt(promptId) {
+export function loadPrompt(promptId: string) {
   const prompt = state.prompts.find((p) => p.id === promptId);
   if (prompt) {
     state.currentPromptId = promptId;
   }
 }
 
-export function deletePrompt(promptId) {
+export function deletePrompt(promptId: string) {
   const index = state.prompts.findIndex((p) => p.id === promptId);
   if (index === -1) return;
 
@@ -100,7 +104,7 @@ export function deletePrompt(promptId) {
   }
 }
 
-export function updateCurrentPromptName(newName) {
+export function updateCurrentPromptName(newName: string) {
   const prompt = getCurrentPrompt();
   if (prompt) {
     prompt.name = newName.trim() || "Untitled Prompt";
@@ -108,7 +112,7 @@ export function updateCurrentPromptName(newName) {
   }
 }
 
-export function importPrompts(importedPrompts) {
+export function importPrompts(importedPrompts: any[]): number {
   if (!Array.isArray(importedPrompts)) {
     console.error("Import failed: data is not an array.");
     return 0;
@@ -117,7 +121,7 @@ export function importPrompts(importedPrompts) {
   importedPrompts.forEach((p) => {
     if (p.id && p.name && Array.isArray(p.blocks)) {
       if (!state.prompts.some((existing) => existing.id === p.id)) {
-        state.prompts.push(p);
+        state.prompts.push(p as Prompt);
         importCount++;
       }
     }
@@ -125,10 +129,10 @@ export function importPrompts(importedPrompts) {
   return importCount;
 }
 
-export function addBlock(type, index) {
+export function addBlock(type: BlockType, index?: number) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
-  const newBlock = {
+  const newBlock: Block = {
     id: generateId(),
     type,
     content: "",
@@ -141,14 +145,14 @@ export function addBlock(type, index) {
   }
 }
 
-export function duplicateBlock(blockId) {
+export function duplicateBlock(blockId: string) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
   const originalIndex = prompt.blocks.findIndex((b) => b.id === blockId);
   if (originalIndex === -1) return;
 
   const originalBlock = prompt.blocks[originalIndex];
-  const newBlock = {
+  const newBlock: Block = {
     ...JSON.parse(JSON.stringify(originalBlock)),
     id: generateId(),
   };
@@ -156,7 +160,7 @@ export function duplicateBlock(blockId) {
   prompt.blocks.splice(originalIndex + 1, 0, newBlock);
 }
 
-export function updateBlockContent(blockId, content) {
+export function updateBlockContent(blockId: string, content: string) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
   const block = prompt.blocks.find((b) => b.id === blockId);
@@ -165,28 +169,34 @@ export function updateBlockContent(blockId, content) {
   }
 }
 
-export function deleteBlock(blockId) {
+export function deleteBlock(blockId: string) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
   prompt.blocks = prompt.blocks.filter((b) => b.id !== blockId);
 }
 
-export function reorderBlocks(draggedId, targetId) {
+export function reorderBlocks(draggedId: string, targetId: string | null) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
   const blocks = prompt.blocks;
   const draggedIndex = blocks.findIndex((b) => b.id === draggedId);
+  if (draggedIndex === -1) return;
+
   const [draggedBlock] = blocks.splice(draggedIndex, 1);
 
   if (targetId) {
     const targetIndex = blocks.findIndex((b) => b.id === targetId);
-    blocks.splice(targetIndex, 0, draggedBlock);
+    if (targetIndex !== -1) {
+      blocks.splice(targetIndex, 0, draggedBlock);
+    } else {
+      blocks.push(draggedBlock);
+    }
   } else {
     blocks.push(draggedBlock);
   }
 }
 
-export function toggleBlockCollapse(blockId) {
+export function toggleBlockCollapse(blockId: string) {
   const prompt = getCurrentPrompt();
   if (!prompt) return;
   const block = prompt.blocks.find((b) => b.id === blockId);
