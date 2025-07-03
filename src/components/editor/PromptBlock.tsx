@@ -96,7 +96,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
       </div>
       <div className={`block-content pl-10 ${isCollapsed ? 'hidden' : ''}`}>
         <textarea
-          className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-sans text-sm"
+          className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
           rows={4}
           placeholder={`Enter ${block.type.toLowerCase()} content here...`}
           defaultValue={block.content}

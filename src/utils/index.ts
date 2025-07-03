@@ -1,3 +1,5 @@
+import { Prompt, PersistedState } from '../types';
+
 export function generateId(): string {
   return `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
@@ -29,4 +31,48 @@ export function downloadJson(data: object, filename: string): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function loadGalleryPromptIntoStorage(promptToLoad: Prompt): void {
+  const STORAGE_KEY = 'promptBuilderState';
+
+  const newPrompt: Prompt = {
+    ...promptToLoad,
+    id: generateId(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    const storedStateJSON = localStorage.getItem(STORAGE_KEY);
+    let currentState: { state: PersistedState; version: number };
+
+    if (storedStateJSON) {
+      currentState = JSON.parse(storedStateJSON);
+    } else {
+      currentState = {
+        state: {
+          prompts: [],
+          currentPromptId: null,
+          currentView: 'editor',
+        },
+        version: 0,
+      };
+    }
+
+    if (!Array.isArray(currentState.state.prompts)) {
+      currentState.state.prompts = [];
+    }
+
+    currentState.state.prompts.unshift(newPrompt);
+    currentState.state.currentPromptId = newPrompt.id;
+    currentState.state.currentView = 'editor';
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
+
+    window.location.href = 'studio.html';
+  } catch (error) {
+    console.error('Failed to load prompt into storage:', error);
+    alert('Could not load the prompt. Your local storage might be corrupted or full.');
+  }
 }

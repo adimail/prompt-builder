@@ -24,10 +24,13 @@ export interface Prompt {
   blocks: Block[];
 }
 
-export interface AppState {
+export interface PersistedState {
   currentView: 'editor' | 'templates';
   prompts: Prompt[];
   currentPromptId: string | null;
+}
+
+export interface AppState extends PersistedState {
   actions: AppActions;
 }
 
