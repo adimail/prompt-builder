@@ -1,0 +1,16 @@
+# Dependencies
+/node_modules
+package-lock.json
+
+# Build artifacts
+/css/style.css
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db

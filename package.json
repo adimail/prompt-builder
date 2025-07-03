@@ -1,0 +1,22 @@
+{
+  "name": "prompt-builder",
+  "version": "1.0.0",
+  "description": "A client-side, single-page application for building and testing LLM prompts.",
+  "main": "js/main.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch"
+  },
+  "keywords": [
+    "prompt-engineering",
+    "llm",
+    "ai",
+    "vanilla-js",
+    "tailwind"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
