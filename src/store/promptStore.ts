@@ -14,13 +14,10 @@ const createNewPromptObject = (name: string = 'Untitled Prompt'): Prompt => ({
 export const usePromptStore = create<AppState>()(
   persist(
     (set, get) => ({
-      theme: 'light',
       currentView: 'editor',
       prompts: [],
       currentPromptId: null,
       actions: {
-        toggleTheme: () =>
-          set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
         setView: (view) => set({ currentView: view }),
         loadPrompt: (promptId) => set({ currentPromptId: promptId }),
         createNewPrompt: (name) => {
@@ -149,7 +146,6 @@ export const usePromptStore = create<AppState>()(
     {
       name: 'promptBuilderState',
       partialize: (state) => ({
-        theme: state.theme,
         prompts: state.prompts,
         currentPromptId: state.currentPromptId,
         currentView: state.currentView,

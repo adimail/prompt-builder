@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 import { downloadJson } from '../../utils';
 import { TemplateCard } from './TemplateCard';
+import { Upload, Download, Edit, Folder } from 'lucide-react';
 
 export const TemplatesView = () => {
   const prompts = usePromptStore((state) => state.prompts);
@@ -44,29 +45,29 @@ export const TemplatesView = () => {
   return (
     <div className="flex-1 flex-col p-6 lg:p-8 overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">My Prompts</h2>
+        <h2 className="text-3xl font-bold tracking-wider">MY PROMPTS</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleImportClick}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Import prompts from a .json file"
           >
-            <span className="material-icons text-base">upload_file</span> Import
+            <Upload className="w-4 h-4" /> Import
           </button>
           <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Export all prompts to a .json file"
           >
-            <span className="material-icons text-base">download</span> Export All
+            <Download className="w-4 h-4" /> Export All
           </button>
           <button
             onClick={() => setView('editor')}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:opacity-90"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
             title="Return to the prompt editor"
           >
-            <span className="material-icons text-base">edit</span> Back to Editor
+            <Edit className="w-4 h-4" /> Back to Editor
           </button>
         </div>
       </div>
@@ -74,10 +75,10 @@ export const TemplatesView = () => {
         {sortedPrompts.length > 0 ? (
           sortedPrompts.map((prompt) => <TemplateCard key={prompt.id} prompt={prompt} />)
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-            <span className="material-icons text-6xl text-gray-400 dark:text-gray-500">folder_off</span>
-            <p className="text-gray-500 mt-4">You don't have any saved prompts yet.</p>
-            <p className="text-gray-500 mt-2">Click "New Prompt" in the sidebar to create one!</p>
+          <div className="text-center py-20 border-2 border-dashed border-neutral-800 rounded-lg">
+            <Folder className="w-16 h-16 text-neutral-700 mx-auto" />
+            <p className="text-neutral-500 mt-4">You don't have any saved prompts yet.</p>
+            <p className="text-neutral-500 mt-2 font-sans">Click "New Prompt" in the sidebar to create one!</p>
           </div>
         )}
       </div>

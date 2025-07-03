@@ -1,5 +1,6 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
+import { PlusCircle, Folder } from 'lucide-react';
 
 interface LeftSidebarProps {
   width: number;
@@ -18,33 +19,34 @@ export const LeftSidebar = ({ width }: LeftSidebarProps) => {
   return (
     <aside
       style={{ width: `${width}px` }}
-      className="bg-secondary p-4 border-r border-gray-200 dark:border-gray-700 flex flex-col gap-6 overflow-y-auto flex-shrink-0"
+      className="bg-neutral-900 p-4 border-r border-neutral-800 flex flex-col gap-6 overflow-y-auto flex-shrink-0"
     >
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-          Library
+        <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2">
+          Actions
         </h2>
         <ul className="space-y-1">
           <li>
             <button
               onClick={handleNewPrompt}
-              className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 text-sm w-full"
+              className="flex items-center gap-3 p-2 rounded-md text-neutral-300 hover:bg-neutral-800 hover:text-white text-sm w-full"
               title="Create a new blank prompt"
             >
-              <span className="material-icons text-base">add_circle</span> New Prompt
+              <PlusCircle className="w-5 h-5" /> New Prompt
             </button>
           </li>
           <li>
             <button
               onClick={() => setView('templates')}
-              className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 text-sm w-full"
+              className="flex items-center gap-3 p-2 rounded-md text-neutral-300 hover:bg-neutral-800 hover:text-white text-sm w-full"
               title="Manage your saved prompts"
             >
-              <span className="material-icons text-base">folder</span> My Prompts
+              <Folder className="w-5 h-5" /> My Prompts
             </button>
           </li>
         </ul>
       </div>
+      <div className="border-t border-neutral-800 my-2"></div>
       <BlockLibrary />
     </aside>
   );

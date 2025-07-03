@@ -3,10 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.tsx',
+  entry: {
+    main: './src/index.tsx',
+    studio: './src/studio.tsx',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     clean: true,
   },
   module: {
@@ -30,6 +33,13 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
+      filename: 'index.html',
+      chunks: ['main'],
+    }),
+    new HtmlWebpackPlugin({
+      template: './public/studio.html',
+      filename: 'studio.html',
+      chunks: ['studio'],
     }),
   ],
   devServer: {
@@ -38,5 +48,8 @@ module.exports = {
     },
     port: 3000,
     open: true,
+    historyApiFallback: {
+      rewrites: [{ from: /^\/studio/, to: '/studio.html' }],
+    },
   },
 };

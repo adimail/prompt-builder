@@ -3,6 +3,7 @@ import { usePromptStore } from '../../store/promptStore';
 import { debounce } from '../../utils';
 import { MainCanvas } from './MainCanvas';
 import { RightPreviewPane } from './RightPreviewPane';
+import { Eye } from 'lucide-react';
 
 export const EditorContent = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
@@ -46,21 +47,21 @@ export const EditorContent = () => {
   return (
     <div className="flex-1 flex overflow-hidden">
       <div id="main-canvas-wrapper" className="flex-1 p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-6">
           <input
             key={currentPrompt.id}
             type="text"
-            className="text-2xl font-bold bg-transparent rounded-md -ml-2 px-2 py-1 w-full focus:bg-secondary focus:ring-1 focus:ring-primary"
+            className="text-2xl font-bold bg-transparent rounded-md -ml-2 px-2 py-1 w-full focus:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-orange-500 tracking-wider"
             defaultValue={currentPrompt.name}
             onChange={(e) => debouncedUpdateName(e.target.value)}
             title="Click to rename prompt"
           />
           <button
             onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-            className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-secondary"
+            className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Toggle Preview Pane"
           >
-            <span className="material-icons text-base">visibility</span> Preview
+            <Eye className="w-4 h-4" /> Preview
           </button>
         </div>
         <MainCanvas />
@@ -69,7 +70,7 @@ export const EditorContent = () => {
         <>
           <div
             onMouseDown={handleMouseDown}
-            className="w-1.5 cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:bg-primary/50 transition-colors"
+            className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
             title="Resize preview pane"
           />
           <RightPreviewPane width={rightPaneWidth} />

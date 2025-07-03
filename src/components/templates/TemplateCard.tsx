@@ -1,6 +1,6 @@
 import { usePromptStore } from '../../store/promptStore';
 import { Prompt } from '../../types';
-import { estimateTokens } from '../../utils';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface TemplateCardProps {
   prompt: Prompt;
@@ -24,29 +24,29 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
   };
 
   return (
-    <div className="bg-secondary p-4 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between gap-4">
+    <div className="bg-neutral-900 p-4 rounded-lg border border-neutral-800 flex items-center justify-between gap-4 hover:border-orange-500/50 transition-colors">
       <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-lg truncate" title={prompt.name}>
+        <h3 className="font-bold text-lg truncate text-white tracking-wider" title={prompt.name}>
           {prompt.name}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-neutral-400 font-sans">
           Last updated: {date} • {prompt.blocks.length} blocks • {charCount.toLocaleString()} chars
         </p>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         <button
           onClick={handleLoad}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
           title="Load this prompt in the editor"
         >
-          <span className="material-icons text-base">edit</span> Load
+          <Edit className="w-4 h-4" /> Load
         </button>
         <button
           onClick={handleDelete}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800"
+          className="w-9 h-9 rounded-md flex items-center justify-center text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
           title="Delete this prompt"
         >
-          <span className="material-icons text-red-500">delete</span>
+          <Trash2 className="w-4 h-4" />
         </button>
       </div>
     </div>

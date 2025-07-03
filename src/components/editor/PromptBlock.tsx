@@ -2,20 +2,33 @@ import { useCallback } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 import { Block, BlockType } from '../../types';
 import { debounce } from '../../utils';
+import {
+  Badge,
+  FileText,
+  BookText,
+  Gavel,
+  Code,
+  Lightbulb,
+  GripVertical,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Trash2,
+} from 'lucide-react';
 
 interface BlockConfig {
-  icon: string;
+  icon: React.ElementType;
   name: string;
   colorClass: string;
 }
 
 export const blockConfig: Record<BlockType, BlockConfig> = {
-  Role: { icon: 'badge', name: 'Role', colorClass: 'text-orange-500' },
-  Instruction: { icon: 'article', name: 'Instruction', colorClass: 'text-blue-500' },
-  Context: { icon: 'source', name: 'Context', colorClass: 'text-purple-500' },
-  Constraint: { icon: 'gavel', name: 'Constraint', colorClass: 'text-red-500' },
-  Variable: { icon: 'code', name: 'Variable', colorClass: 'text-green-500' },
-  Example: { icon: 'lightbulb', name: 'Example', colorClass: 'text-yellow-500' },
+  Role: { icon: Badge, name: 'Role', colorClass: 'text-orange-400' },
+  Instruction: { icon: FileText, name: 'Instruction', colorClass: 'text-blue-400' },
+  Context: { icon: BookText, name: 'Context', colorClass: 'text-purple-400' },
+  Constraint: { icon: Gavel, name: 'Constraint', colorClass: 'text-red-400' },
+  Variable: { icon: Code, name: 'Variable', colorClass: 'text-green-400' },
+  Example: { icon: Lightbulb, name: 'Example', colorClass: 'text-yellow-400' },
 };
 
 interface PromptBlockProps {
@@ -37,8 +50,8 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
 
   return (
     <div
-      className={`prompt-block bg-secondary p-3 rounded-lg border border-gray-200 dark:border-gray-700 ${
-        isDragging ? 'opacity-50' : ''
+      className={`prompt-block bg-neutral-900 p-3 rounded-lg border border-neutral-800 transition-opacity ${
+        isDragging ? 'opacity-30' : 'opacity-100'
       }`}
       data-block-id={block.id}
       draggable="true"
@@ -46,43 +59,46 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
       onDragEnd={onDragEnd}
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="material-icons cursor-grab drag-handle text-gray-400" title="Drag to reorder">
-            drag_indicator
-          </span>
-          <span className={`material-icons ${config.colorClass}`}>{config.icon}</span>
-          <h3 className="font-semibold">{config.name}</h3>
+        <div className="flex items-center gap-3">
+          <GripVertical
+            className="cursor-grab text-neutral-600 hover:text-neutral-400"
+          />
+          <config.icon className={`w-5 h-5 ${config.colorClass}`} />
+          <h3 className="font-semibold tracking-wider text-white">{config.name.toUpperCase()}</h3>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => toggleBlockCollapse(block.id)}
-            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white"
             title="Collapse/Expand Block"
           >
-            <span className="material-icons text-sm">{isCollapsed ? 'expand_more' : 'expand_less'}</span>
+            {isCollapsed ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronUp className="w-4 h-4" />
+            )}
           </button>
           <button
             onClick={() => duplicateBlock(block.id)}
-            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white"
             title="Duplicate Block"
           >
-            <span className="material-icons text-sm">content_copy</span>
+            <Copy className="w-4 h-4" />
           </button>
           <button
             onClick={() => deleteBlock(block.id)}
-            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
             title="Delete Block"
           >
-            <span className="material-icons text-sm text-red-500">delete</span>
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       </div>
-      <div className={`block-content pl-8 ${isCollapsed ? 'hidden' : ''}`}>
+      <div className={`block-content pl-10 ${isCollapsed ? 'hidden' : ''}`}>
         <textarea
-          className="w-full bg-bkg p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary resize-y"
-          rows={3}
-          style={{ minHeight: '111px' }}
-          placeholder={`Enter ${block.type.toLowerCase()}...`}
+          className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-sans text-sm"
+          rows={4}
+          placeholder={`Enter ${block.type.toLowerCase()} content here...`}
           defaultValue={block.content}
           onChange={(e) => debouncedUpdate(block.id, e.target.value)}
         ></textarea>

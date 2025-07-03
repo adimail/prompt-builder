@@ -25,7 +25,6 @@ export interface Prompt {
 }
 
 export interface AppState {
-  theme: 'light' | 'dark';
   currentView: 'editor' | 'templates';
   prompts: Prompt[];
   currentPromptId: string | null;
@@ -33,7 +32,6 @@ export interface AppState {
 }
 
 export interface AppActions {
-  toggleTheme: () => void;
   setView: (view: 'editor' | 'templates') => void;
   loadPrompt: (promptId: string) => void;
   createNewPrompt: (name: string) => void;

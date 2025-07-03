@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 import { estimateTokens, downloadJson } from '../../utils';
+import { Download, Clipboard, Check } from 'lucide-react';
 
 export const Footer = () => {
   const [isCopied, setIsCopied] = useState(false);
@@ -8,11 +9,10 @@ export const Footer = () => {
     state.prompts.find((p) => p.id === state.currentPromptId)
   );
 
-  const { fullText, charCount, tokenCount } = useMemo(() => {
-    if (!currentPrompt) return { fullText: '', charCount: 0, tokenCount: 0 };
+  const { charCount, tokenCount } = useMemo(() => {
+    if (!currentPrompt) return { charCount: 0, tokenCount: 0 };
     const text = currentPrompt.blocks.map((b) => b.content).join('\n\n');
     return {
-      fullText: text,
       charCount: text.length,
       tokenCount: estimateTokens(text),
     };
@@ -35,30 +35,34 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="flex items-center justify-between px-4 py-2 bg-secondary border-t border-gray-200 dark:border-gray-700 text-sm">
-      <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
+    <footer className="flex items-center justify-between px-4 py-2 bg-neutral-900 border-t border-neutral-800 text-sm">
+      <div className="flex items-center gap-4 text-neutral-400">
         <div>
           <span>
-            {charCount.toLocaleString()} chars / {tokenCount.toLocaleString()} tokens
+            {charCount.toLocaleString()} CHARS / {tokenCount.toLocaleString()} TOKENS
           </span>
         </div>
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={handleDownload}
-          className="flex items-center gap-2 px-4 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+          className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md hover:bg-neutral-800 hover:text-white"
           title="Download the current prompt as a .json file"
         >
-          <span className="material-icons text-base">download</span> Download
+          <Download className="w-4 h-4" /> Download
         </button>
         <button
           onClick={handleCopy}
           disabled={isCopied}
-          className="copy-prompt-btn flex items-center gap-2 px-4 py-1.5 bg-primary text-white rounded-md hover:opacity-90 disabled:opacity-70"
+          className="flex items-center gap-2 px-3 py-1.5 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-70 font-bold"
           title="Copy the final assembled prompt to your clipboard"
         >
-          <span className="material-icons text-base">{isCopied ? 'done' : 'content_copy'}</span>
-          {isCopied ? 'Copied!' : 'Copy Prompt'}
+          {isCopied ? (
+            <Check className="w-4 h-4" />
+          ) : (
+            <Clipboard className="w-4 h-4" />
+          )}
+          {isCopied ? 'COPIED!' : 'COPY PROMPT'}
         </button>
       </div>
     </footer>
