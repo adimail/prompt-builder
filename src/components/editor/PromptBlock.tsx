@@ -10,6 +10,7 @@ interface BlockConfig {
 }
 
 export const blockConfig: Record<BlockType, BlockConfig> = {
+  Role: { icon: 'badge', name: 'Role', colorClass: 'text-orange-500' },
   Instruction: { icon: 'article', name: 'Instruction', colorClass: 'text-blue-500' },
   Context: { icon: 'source', name: 'Context', colorClass: 'text-purple-500' },
   Constraint: { icon: 'gavel', name: 'Constraint', colorClass: 'text-red-500' },

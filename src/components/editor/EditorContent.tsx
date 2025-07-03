@@ -6,6 +6,7 @@ import { RightPreviewPane } from './RightPreviewPane';
 
 export const EditorContent = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
+  const [rightPaneWidth, setRightPaneWidth] = useState(450);
 
   const currentPrompt = usePromptStore((state) =>
     state.prompts.find((p) => p.id === state.currentPromptId)
@@ -15,6 +16,30 @@ export const EditorContent = () => {
   const debouncedUpdateName = useCallback(debounce(updateCurrentPromptName, 300), [
     updateCurrentPromptName,
   ]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startWidth = rightPaneWidth;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const newWidth = startWidth - (moveEvent.clientX - startX);
+        if (newWidth > 300 && newWidth < window.innerWidth * 0.7) {
+          setRightPaneWidth(newWidth);
+        }
+      };
+
+      const handleMouseUp = () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [rightPaneWidth]
+  );
 
   if (!currentPrompt) return null;
 
@@ -40,7 +65,16 @@ export const EditorContent = () => {
         </div>
         <MainCanvas />
       </div>
-      {isPreviewVisible && <RightPreviewPane />}
+      {isPreviewVisible && (
+        <>
+          <div
+            onMouseDown={handleMouseDown}
+            className="w-1.5 cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:bg-primary/50 transition-colors"
+            title="Resize preview pane"
+          />
+          <RightPreviewPane width={rightPaneWidth} />
+        </>
+      )}
     </div>
   );
 };

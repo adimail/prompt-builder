@@ -1,4 +1,5 @@
 export const blockTypes = [
+  'Role',
   'Instruction',
   'Context',
   'Constraint',

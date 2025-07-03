@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 
-export const RightPreviewPane = () => {
+interface RightPreviewPaneProps {
+  width: number;
+}
+
+export const RightPreviewPane = ({ width }: RightPreviewPaneProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const currentPrompt = usePromptStore((state) =>
     state.prompts.find((p) => p.id === state.currentPromptId)
@@ -21,7 +25,10 @@ export const RightPreviewPane = () => {
   };
 
   return (
-    <aside className="w-1/3 bg-secondary p-4 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+    <aside
+      style={{ width: `${width}px` }}
+      className="bg-secondary p-4 border-l border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0"
+    >
       <div className="flex-1 overflow-y-auto">
         <div className="flex justify-between items-center mb-2">
           <h3 className="font-bold">Assembled Prompt</h3>

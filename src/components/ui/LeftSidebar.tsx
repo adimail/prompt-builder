@@ -1,7 +1,11 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
 
-export const LeftSidebar = () => {
+interface LeftSidebarProps {
+  width: number;
+}
+
+export const LeftSidebar = ({ width }: LeftSidebarProps) => {
   const { createNewPrompt, setView } = usePromptStore((state) => state.actions);
 
   const handleNewPrompt = () => {
@@ -12,7 +16,10 @@ export const LeftSidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-secondary p-4 border-r border-gray-200 dark:border-gray-700 flex flex-col gap-6 overflow-y-auto">
+    <aside
+      style={{ width: `${width}px` }}
+      className="bg-secondary p-4 border-r border-gray-200 dark:border-gray-700 flex flex-col gap-6 overflow-y-auto flex-shrink-0"
+    >
       <div>
         <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
           Library
