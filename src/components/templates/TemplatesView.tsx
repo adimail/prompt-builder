@@ -36,7 +36,6 @@ export const TemplatesView = () => {
       const data = JSON.parse(text);
       const promptsToImport = Array.isArray(data) ? data : [data];
       const count = importPrompts(promptsToImport);
-      alert(`${count} new prompt(s) imported successfully!`);
     } catch (err) {
       alert('Import failed. The file is not valid JSON.');
     }

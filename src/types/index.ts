@@ -24,8 +24,10 @@ export interface Prompt {
   blocks: Block[];
 }
 
+export type AppView = 'editor' | 'templates' | 'settings';
+
 export interface PersistedState {
-  currentView: 'editor' | 'templates';
+  currentView: AppView;
   prompts: Prompt[];
   currentPromptId: string | null;
 }
@@ -35,7 +37,7 @@ export interface AppState extends PersistedState {
 }
 
 export interface AppActions {
-  setView: (view: 'editor' | 'templates') => void;
+  setView: (view: AppView) => void;
   loadPrompt: (promptId: string) => void;
   createNewPrompt: (name: string) => void;
   deletePrompt: (promptId: string) => void;

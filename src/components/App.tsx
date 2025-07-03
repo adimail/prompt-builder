@@ -6,6 +6,7 @@ import { Footer } from './ui/Footer';
 import { NoPromptView } from './editor/NoPromptView';
 import { EditorContent } from './editor/EditorContent';
 import { TemplatesView } from './templates/TemplatesView';
+import { SettingsView } from './settings/SettingsView';
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
@@ -43,6 +44,19 @@ export const App = () => {
     return <EditorContent />;
   };
 
+  const renderMainView = () => {
+    switch (currentView) {
+      case 'editor':
+        return <Editor />;
+      case 'templates':
+        return <TemplatesView />;
+      case 'settings':
+        return <SettingsView />;
+      default:
+        return <Editor />;
+    }
+  };
+
   return (
     <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono">
       <Header />
@@ -53,9 +67,7 @@ export const App = () => {
           className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
           title="Resize sidebar"
         />
-        <main className="flex-1 flex flex-col overflow-hidden">
-          {currentView === 'editor' ? <Editor /> : <TemplatesView />}
-        </main>
+        <main className="flex-1 flex flex-col overflow-hidden">{renderMainView()}</main>
       </div>
       {currentView === 'editor' && currentPromptId && <Footer />}
     </div>

@@ -1,7 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { usePromptStore } from '../../store/promptStore';
+import { useSettingsStore } from '../../store/settingsStore';
 import { Block, BlockType } from '../../types';
 import { debounce } from '../../utils';
+import { streamImprovedText } from '../../services/geminiService';
 import {
   Badge,
   FileText,
@@ -14,6 +16,8 @@ import {
   ChevronUp,
   Copy,
   Trash2,
+  Wand2,
+  Loader,
 } from 'lucide-react';
 
 interface BlockConfig {
@@ -42,8 +46,36 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
   const { deleteBlock, duplicateBlock, toggleBlockCollapse, updateBlockContent } = usePromptStore(
     (state) => state.actions
   );
+  const setView = usePromptStore((state) => state.actions.setView);
+  const apiKey = useSettingsStore((state) => state.apiKey);
+  const [isImproving, setIsImproving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const debouncedUpdate = useCallback(debounce(updateBlockContent, 250), [updateBlockContent]);
+
+  const handleImprove = async () => {
+    if (!apiKey) {
+      alert('Please set your Gemini API key in the Settings page to use this feature.');
+      setView('settings');
+      return;
+    }
+    if (!textareaRef.current || !block.content) return;
+
+    setIsImproving(true);
+
+    try {
+      const improvedText = await streamImprovedText(apiKey, block.content);
+      if (textareaRef.current) {
+        textareaRef.current.value = improvedText;
+      }
+      updateBlockContent(block.id, improvedText);
+    } catch (error) {
+      console.error('Error improving prompt:', error);
+      alert('Failed to improve prompt. Please check your API key and console for details.');
+    } finally {
+      setIsImproving(false);
+    }
+  };
 
   const config = blockConfig[block.type];
   const isCollapsed = block.isCollapsed;
@@ -60,13 +92,23 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <GripVertical
-            className="cursor-grab text-neutral-600 hover:text-neutral-400"
-          />
+          <GripVertical className="cursor-grab text-neutral-600 hover:text-neutral-400" />
           <config.icon className={`w-5 h-5 ${config.colorClass}`} />
           <h3 className="font-semibold tracking-wider text-white">{config.name.toUpperCase()}</h3>
         </div>
         <div className="flex items-center gap-1">
+          <button
+            onClick={handleImprove}
+            disabled={isImproving}
+            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed"
+            title="Improve with AI"
+          >
+            {isImproving ? (
+              <Loader className="w-4 h-4 animate-spin" />
+            ) : (
+              <Wand2 className="w-4 h-4" />
+            )}
+          </button>
           <button
             onClick={() => toggleBlockCollapse(block.id)}
             className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white"
@@ -96,6 +138,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
       </div>
       <div className={`block-content pl-10 ${isCollapsed ? 'hidden' : ''}`}>
         <textarea
+          ref={textareaRef}
           className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
           rows={4}
           placeholder={`Enter ${block.type.toLowerCase()} content here...`}
