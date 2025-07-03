@@ -2,7 +2,7 @@
 /node_modules
 
 # Build artifacts
-/css/style.css
+dist/
 
 # Logs
 npm-debug.log*

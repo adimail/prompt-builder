@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: ["master"]
+    branches: ['master']
 
   workflow_dispatch:
 
@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
@@ -24,30 +24,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
-          
+
       - name: Install dependencies
-        run: npm install
-        
-      - name: Compile TypeScript
-        run: npx tsc
-        
-      - name: Build production CSS
-        run: npm run build:prod
-        
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
-          
+          path: './dist'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
