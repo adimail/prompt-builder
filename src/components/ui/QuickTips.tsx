@@ -43,7 +43,7 @@ const TipCard = ({
 
 export const QuickTips = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto my-20">
+    <div className="w-full max-w-7xl mx-auto my-20 px-6">
       <h2 className="text-2xl font-bold text-white tracking-wider mb-6">
         QUICK TIPS FOR BETTER PROMPTS
       </h2>

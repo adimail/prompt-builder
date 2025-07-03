@@ -1,4 +1,5 @@
 import { QuickTips } from './ui/QuickTips';
+import { HeroSection } from './ui/HeroSection';
 import {
   Box,
   FileJson,
@@ -34,36 +35,21 @@ export const LandingPage = () => {
         <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Rocket className="text-orange-500 w-7 h-7" />
-            <h1 className="text-xl font-bold tracking-wider">PROMPT BUILDER</h1>
+            <h1 className="md:text-xl text-sm font-bold tracking-wider">PROMPT BUILDER</h1>
           </div>
           <a
             href="studio.html"
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 font-bold text-sm"
+            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 font-bold md:text-sm text-xs"
           >
             GO TO STUDIO
           </a>
         </nav>
       </header>
 
-      <main className="container mx-auto px-6 py-24 text-center">
-        <h2 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-wider text-white">
-          CRAFT, TEST, AND PERFECT YOUR LLM PROMPTS
-        </h2>
-        <p className="text-lg md:text-xl text-neutral-400 max-w-3xl mx-auto mb-8 font-sans">
-          A powerful, client-side tool for prompt engineering. Build modular prompts, manage
-          templates, and get real-time feedback, all within your browser. No backend, no sign-up
-          required.
-        </p>
-        <a
-          href="studio.html"
-          className="px-8 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold text-lg inline-flex items-center gap-2"
-        >
-          <Rocket className="w-5 h-5" />
-          LAUNCH STUDIO
-        </a>
+      <main>
+        <HeroSection />
+        <QuickTips />
       </main>
-
-      <QuickTips />
 
       <section id="features" className="bg-neutral-950 py-20 border-y border-neutral-800">
         <div className="container mx-auto px-6">
