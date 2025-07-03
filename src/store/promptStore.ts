@@ -28,6 +28,19 @@ export const usePromptStore = create<AppState>()(
             currentView: 'editor',
           }));
         },
+        loadGeneratedPrompt: (prompt) => {
+          set((state) => {
+            const existingIds = new Set(state.prompts.map((p) => p.id));
+            if (existingIds.has(prompt.id)) {
+              prompt.id = generateId();
+            }
+            return {
+              prompts: [prompt, ...state.prompts],
+              currentPromptId: prompt.id,
+              currentView: 'editor',
+            };
+          });
+        },
         deletePrompt: (promptId) =>
           set((state) => {
             const newPrompts = state.prompts.filter((p) => p.id !== promptId);
@@ -81,7 +94,11 @@ export const usePromptStore = create<AppState>()(
           set((state) => ({
             prompts: state.prompts.map((p) =>
               p.id === state.currentPromptId
-                ? { ...p, blocks: p.blocks.filter((b) => b.id !== blockId), updatedAt: new Date().toISOString() }
+                ? {
+                    ...p,
+                    blocks: p.blocks.filter((b) => b.id !== blockId),
+                    updatedAt: new Date().toISOString(),
+                  }
                 : p
             ),
           })),

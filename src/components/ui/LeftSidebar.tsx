@@ -1,12 +1,13 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
-import { PlusCircle, Folder, LayoutGrid, Settings } from 'lucide-react';
+import { PlusCircle, Folder, LayoutGrid, Settings, Wand2 } from 'lucide-react';
 
 interface LeftSidebarProps {
   width: number;
+  onGenerateWithAi: () => void;
 }
 
-export const LeftSidebar = ({ width }: LeftSidebarProps) => {
+export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
   const { createNewPrompt, setView } = usePromptStore((state) => state.actions);
 
   const handleNewPrompt = () => {
@@ -33,6 +34,15 @@ export const LeftSidebar = ({ width }: LeftSidebarProps) => {
               title="Create a new blank prompt"
             >
               <PlusCircle className="w-5 h-5" /> New Prompt
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={onGenerateWithAi}
+              className="flex items-center gap-3 p-2 rounded-md text-neutral-300 hover:bg-neutral-800 hover:text-white text-sm w-full"
+              title="Create a new prompt using AI"
+            >
+              <Wand2 className="w-5 h-5" /> New Prompt with AI
             </button>
           </li>
           <li>

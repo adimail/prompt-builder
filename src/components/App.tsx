@@ -10,11 +10,13 @@ import { TemplatesView } from './templates/TemplatesView';
 import { SettingsView } from './settings/SettingsView';
 import { MobileControls } from './ui/MobileControls';
 import { cn } from '../utils/cn';
+import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
   const currentPromptId = usePromptStore((state) => state.currentPromptId);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(280);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
 
   const { fontSize, isLeftSidebarOpen, actions: uiActions } = useUiStore();
 
@@ -70,10 +72,13 @@ export const App = () => {
 
   return (
     <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono text-base">
-      <Header />
+      <Header onGenerateWithAi={() => setIsGenerateModalOpen(true)} />
       <div className="flex flex-1 overflow-hidden relative">
         <div className="hidden md:flex">
-          <LeftSidebar width={leftSidebarWidth} />
+          <LeftSidebar
+            width={leftSidebarWidth}
+            onGenerateWithAi={() => setIsGenerateModalOpen(true)}
+          />
           <div
             onMouseDown={handleMouseDown}
             className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
@@ -87,10 +92,10 @@ export const App = () => {
             isLeftSidebarOpen ? 'translate-x-0' : '-translate-x-[500px]'
           )}
         >
-          <LeftSidebar width={320} />
+          <LeftSidebar width={320} onGenerateWithAi={() => setIsGenerateModalOpen(true)} />
         </div>
 
-        {(isLeftSidebarOpen) && (
+        {isLeftSidebarOpen && (
           <div
             onClick={() => uiActions.closeSidebars()}
             className="md:hidden fixed inset-0 bg-black/60 z-30"
@@ -106,6 +111,8 @@ export const App = () => {
           <MobileControls showLeft />
         </div>
       )}
+
+      {isGenerateModalOpen && <GenerateWithAiModal onClose={() => setIsGenerateModalOpen(false)} />}
     </div>
   );
 };

@@ -40,6 +40,7 @@ export interface AppActions {
   setView: (view: AppView) => void;
   loadPrompt: (promptId: string) => void;
   createNewPrompt: (name: string) => void;
+  loadGeneratedPrompt: (prompt: Prompt) => void;
   deletePrompt: (promptId: string) => void;
   updateCurrentPromptName: (name: string) => void;
   importPrompts: (importedPrompts: any[]) => number;
