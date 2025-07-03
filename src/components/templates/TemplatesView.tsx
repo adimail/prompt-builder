@@ -3,6 +3,7 @@ import { usePromptStore } from '../../store/promptStore';
 import { downloadJson } from '../../utils';
 import { TemplateCard } from './TemplateCard';
 import { Upload, Download, Edit, Folder } from 'lucide-react';
+import { StorageStats } from '../ui/StorageStats';
 
 export const TemplatesView = () => {
   const prompts = usePromptStore((state) => state.prompts);
@@ -82,6 +83,7 @@ export const TemplatesView = () => {
           </div>
         )}
       </div>
+      <StorageStats/>
     </div>
   );
 };

@@ -76,3 +76,12 @@ export function loadGalleryPromptIntoStorage(promptToLoad: Prompt): void {
     alert('Could not load the prompt. Your local storage might be corrupted or full.');
   }
 }
+
+export function formatBytes(bytes: number, decimals: number = 2): string {
+  if (!bytes || bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
