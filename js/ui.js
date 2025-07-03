@@ -63,6 +63,7 @@ function renderEditorView() {
 }
 
 function renderTemplatesView() {
+  renderBlockLibrary();
   const sortedPrompts = [...state.prompts].sort((a, b) => {
     const dateA = new Date(a.updatedAt || a.createdAt);
     const dateB = new Date(b.updatedAt || b.createdAt);
@@ -94,7 +95,7 @@ function createTemplateCard(prompt) {
         <div class="flex-1 min-w-0">
             <h3 class="font-bold text-lg truncate" title="${prompt.name}">${prompt.name}</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                Last updated: ${date} &bull; ${prompt.blocks.length} blocks &bull; ${charCount.toLocaleString()} chars
+                Last updated: ${date} • ${prompt.blocks.length} blocks • ${charCount.toLocaleString()} chars
             </p>
             <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 truncate">Blocks: ${blockSummary}</p>
         </div>
@@ -102,7 +103,7 @@ function createTemplateCard(prompt) {
             <button data-action="load" data-id="${prompt.id}" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:opacity-90" title="Load this prompt in the editor">
                 <span class="material-icons text-base">edit</span> Load
             </button>
-            <button data-action="delete" data-id="${prompt.id}" class="p-2 rounded-md hover:bg-red-200 dark:hover:bg-red-800" title="Delete this prompt">
+            <button data-action="delete" data-id="${prompt.id}" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800" title="Delete this prompt">
                 <span class="material-icons text-red-500">delete</span>
             </button>
         </div>
@@ -157,6 +158,10 @@ function createBlockElement(block) {
   element.dataset.blockId = block.id;
   element.draggable = true;
 
+  const isCollapsed = block.isCollapsed;
+  const collapseIcon = isCollapsed ? "expand_more" : "expand_less";
+  const contentVisibility = isCollapsed ? "hidden" : "";
+
   element.innerHTML = `
         <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
@@ -165,19 +170,19 @@ function createBlockElement(block) {
                 <h3 class="font-semibold">${config.name}</h3>
             </div>
             <div class="flex items-center gap-1">
-                <button class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600" data-action="collapse" title="Collapse/Expand Block">
-                    <span class="material-icons text-sm">expand_less</span>
+                <button class="w-5 h-7 p-5 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600" data-action="collapse" title="Collapse/Expand Block">
+                    <span class="material-icons text-sm">${collapseIcon}</span>
                 </button>
-                <button class="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600" data-action="duplicate" title="Duplicate Block">
+                <button class="w-5 h-7 p-5 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600" data-action="duplicate" title="Duplicate Block">
                     <span class="material-icons text-sm">content_copy</span>
                 </button>
-                <button class="p-1 rounded-full hover:bg-red-200 dark:hover:bg-red-800" data-action="delete" title="Delete Block">
+                <button class="w-5 h-7 p-5 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800" data-action="delete" title="Delete Block">
                     <span class="material-icons text-sm text-red-500">delete</span>
                 </button>
             </div>
         </div>
-        <div class="block-content pl-8">
-            <textarea class="w-full bg-bkg p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary resize-y" rows="3" placeholder="Enter ${block.type.toLowerCase()}...">${block.content}</textarea>
+        <div class="block-content pl-8 ${contentVisibility}">
+            <textarea class="w-full bg-bkg p-2 rounded-md border border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary resize-y" rows="3" style="min-height: 111px;" placeholder="Enter ${block.type.toLowerCase()}...">${block.content}</textarea>
         </div>
     `;
   return element;

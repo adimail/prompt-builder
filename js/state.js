@@ -186,6 +186,15 @@ export function reorderBlocks(draggedId, targetId) {
   }
 }
 
+export function toggleBlockCollapse(blockId) {
+  const prompt = getCurrentPrompt();
+  if (!prompt) return;
+  const block = prompt.blocks.find((b) => b.id === blockId);
+  if (block) {
+    block.isCollapsed = !block.isCollapsed;
+  }
+}
+
 export function toggleTheme() {
   state.theme = state.theme === "light" ? "dark" : "light";
   saveState();

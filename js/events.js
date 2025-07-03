@@ -5,6 +5,7 @@ import {
   updateBlockContent,
   deleteBlock,
   duplicateBlock,
+  toggleBlockCollapse,
   reorderBlocks,
   toggleTheme,
   setView,
@@ -16,7 +17,13 @@ import {
   importPrompts,
   getCurrentPrompt,
 } from "./state.js";
-import { render, rightPreviewPaneEl, blockConfig } from "./ui.js";
+import {
+  render,
+  rightPreviewPaneEl,
+  blockConfig,
+  renderFooter,
+  renderPreview,
+} from "./ui.js";
 import { debounce, downloadJson } from "./utils.js";
 
 const canvasEl = document.getElementById("canvas");
@@ -177,7 +184,8 @@ function handleCanvasInput(e) {
     const blockId = e.target.closest(".prompt-block").dataset.blockId;
     updateBlockContent(blockId, e.target.value);
     saveCurrentPrompt();
-    render();
+    renderPreview();
+    renderFooter();
     saveState();
   }
 }
@@ -195,6 +203,10 @@ function handleCanvasClick(e) {
     saveState();
   } else if (action === "duplicate") {
     duplicateBlock(blockId);
+    render();
+    saveState();
+  } else if (action === "collapse") {
+    toggleBlockCollapse(blockId);
     render();
     saveState();
   }
