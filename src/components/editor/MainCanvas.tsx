@@ -79,7 +79,7 @@ export const MainCanvas = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
               title={`Add a new ${type} block`}
             >
-              <span className={`material-icons text-base text-${blockConfig[type].color}-500`}>
+              <span className={`material-icons text-base`}>
                 {blockConfig[type].icon}
               </span>
               {type}
