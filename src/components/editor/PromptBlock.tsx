@@ -46,6 +46,9 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
   const { deleteBlock, duplicateBlock, toggleBlockCollapse, updateBlockContent } = usePromptStore(
     (state) => state.actions
   );
+  const currentPrompt = usePromptStore((state) =>
+    state.prompts.find((p) => p.id === state.currentPromptId)
+  );
   const setView = usePromptStore((state) => state.actions.setView);
   const apiKey = useSettingsStore((state) => state.apiKey);
   const [isImproving, setIsImproving] = useState(false);
@@ -59,19 +62,27 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
       setView('settings');
       return;
     }
-    if (!textareaRef.current || !block.content) return;
+    if (!textareaRef.current || !block.content || !currentPrompt) return;
 
     setIsImproving(true);
+    let fullResponse = '';
+    textareaRef.current.value = '';
 
     try {
-      const improvedText = await streamImprovedText(apiKey, block.content);
-      if (textareaRef.current) {
-        textareaRef.current.value = improvedText;
-      }
-      updateBlockContent(block.id, improvedText);
+      await streamImprovedText(apiKey, block, currentPrompt, (chunk) => {
+        fullResponse += chunk;
+        if (textareaRef.current) {
+          textareaRef.current.value = fullResponse;
+          textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+        }
+      });
+      updateBlockContent(block.id, fullResponse);
     } catch (error) {
       console.error('Error improving prompt:', error);
       alert('Failed to improve prompt. Please check your API key and console for details.');
+      if (textareaRef.current) {
+        textareaRef.current.value = block.content;
+      }
     } finally {
       setIsImproving(false);
     }
