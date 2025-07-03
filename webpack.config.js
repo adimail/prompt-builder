@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const isGhPages = process.env.GITHUB_PAGES === 'true';
+const publicPath = isGhPages ? '/prompt-builder/' : '/';
+
 module.exports = {
   mode: 'development',
   entry: {
@@ -11,6 +14,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
     clean: true,
+    publicPath: publicPath,
   },
   module: {
     rules: [
