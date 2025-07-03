@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
 import { usePromptStore } from '../../store/promptStore';
+import { useUiStore } from '../../store/uiStore';
 import { debounce } from '../../utils';
 import { MainCanvas } from './MainCanvas';
 import { RightPreviewPane } from './RightPreviewPane';
 import { Eye } from 'lucide-react';
+import { cn } from '../../utils/cn';
 
 export const EditorContent = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
@@ -13,6 +15,7 @@ export const EditorContent = () => {
     state.prompts.find((p) => p.id === state.currentPromptId)
   );
   const updateCurrentPromptName = usePromptStore((state) => state.actions.updateCurrentPromptName);
+  const { isRightSidebarOpen, actions: uiActions } = useUiStore();
 
   const debouncedUpdateName = useCallback(debounce(updateCurrentPromptName, 300), [
     updateCurrentPromptName,
@@ -46,7 +49,7 @@ export const EditorContent = () => {
 
   return (
     <div className="flex-1 flex overflow-hidden">
-      <div id="main-canvas-wrapper" className="flex-1 p-6 overflow-y-auto">
+      <div id="main-canvas-wrapper" className="flex-1 p-4 md:p-6 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <input
             key={currentPrompt.id}
@@ -58,7 +61,7 @@ export const EditorContent = () => {
           />
           <button
             onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-            className="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
+            className="hidden md:flex flex-shrink-0 items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Toggle Preview Pane"
           >
             <Eye className="w-4 h-4" /> Preview
@@ -66,15 +69,32 @@ export const EditorContent = () => {
         </div>
         <MainCanvas />
       </div>
+
       {isPreviewVisible && (
-        <>
+        <div className="hidden md:flex">
           <div
             onMouseDown={handleMouseDown}
             className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
             title="Resize preview pane"
           />
           <RightPreviewPane width={rightPaneWidth} />
-        </>
+        </div>
+      )}
+
+      <div
+        className={cn(
+          'md:hidden fixed inset-y-0 right-0 z-40 w-80 bg-neutral-900 transform transition-transform duration-300 ease-in-out',
+          isRightSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+        )}
+      >
+        <RightPreviewPane width={320} />
+      </div>
+
+      {isRightSidebarOpen && (
+        <div
+          onClick={() => uiActions.closeSidebars()}
+          className="md:hidden fixed inset-0 bg-black/60 z-30"
+        ></div>
       )}
     </div>
   );

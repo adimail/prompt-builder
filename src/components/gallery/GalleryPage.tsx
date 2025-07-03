@@ -4,6 +4,9 @@ import { Prompt } from '../../types';
 import { GalleryCard } from './GalleryCard';
 import { GalleryPreviewPane } from './GalleryPreviewPane';
 import { Rocket, Loader, AlertTriangle } from 'lucide-react';
+import { useUiStore } from '../../store/uiStore';
+import { MobileControls } from '../ui/MobileControls';
+import { cn } from '../../utils/cn';
 
 const GalleryHeader = () => (
   <header className="flex items-center justify-between px-6 h-16 bg-neutral-950 border-b border-neutral-800 shadow-sm flex-shrink-0">
@@ -28,6 +31,12 @@ export const GalleryPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rightPaneWidth, setRightPaneWidth] = useState(window.innerWidth * 0.4);
+
+  const { fontSize, isRightSidebarOpen, actions: uiActions } = useUiStore();
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSize}px`;
+  }, [fontSize]);
 
   useEffect(() => {
     fetchGalleryPrompts()
@@ -105,16 +114,38 @@ export const GalleryPage = () => {
   };
 
   return (
-    <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono">
+    <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono text-base">
       <GalleryHeader />
-      <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 flex flex-col overflow-y-auto p-6">{renderContent()}</main>
+      <div className="flex flex-1 overflow-hidden relative">
+        <main className="flex-1 flex flex-col overflow-y-auto p-4 md:p-6">{renderContent()}</main>
+
+        <div className="hidden md:flex">
+          <div
+            onMouseDown={handleMouseDown}
+            className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
+            title="Resize preview pane"
+          />
+          <GalleryPreviewPane prompt={selectedPrompt} width={rightPaneWidth} />
+        </div>
+
         <div
-          onMouseDown={handleMouseDown}
-          className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
-          title="Resize preview pane"
-        />
-        <GalleryPreviewPane prompt={selectedPrompt} width={rightPaneWidth} />
+          className={cn(
+            'md:hidden fixed inset-y-0 right-0 z-40 w-80 bg-neutral-900 transform transition-transform duration-300 ease-in-out',
+            isRightSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+          )}
+        >
+          <GalleryPreviewPane prompt={selectedPrompt} width={320} />
+        </div>
+
+        {isRightSidebarOpen && (
+          <div
+            onClick={() => uiActions.closeSidebars()}
+            className="md:hidden fixed inset-0 bg-black/60 z-30"
+          ></div>
+        )}
+      </div>
+      <div className="md:hidden">
+        <MobileControls />
       </div>
     </div>
   );

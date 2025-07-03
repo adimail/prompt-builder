@@ -19,7 +19,7 @@ export const LeftSidebar = ({ width }: LeftSidebarProps) => {
   return (
     <aside
       style={{ width: `${width}px` }}
-      className="bg-neutral-900 p-4 border-r border-neutral-800 flex flex-col gap-6 overflow-y-auto flex-shrink-0"
+      className="bg-neutral-900 p-4 border-r border-neutral-800 flex flex-col gap-6 overflow-y-auto flex-shrink-0 h-full"
     >
       <div>
         <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2">

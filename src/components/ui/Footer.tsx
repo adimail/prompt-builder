@@ -49,7 +49,7 @@ export const Footer = () => {
           className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md hover:bg-neutral-800 hover:text-white"
           title="Download the current prompt as a .json file"
         >
-          <Download className="w-4 h-4" /> Download
+          <Download className="w-4 h-4" /> <span className='hidden md:block'>Download</span>
         </button>
         <button
           onClick={handleCopy}
@@ -62,7 +62,9 @@ export const Footer = () => {
           ) : (
             <Clipboard className="w-4 h-4" />
           )}
-          {isCopied ? 'COPIED!' : 'COPY PROMPT'}
+          <span className='hidden md:block'>
+            {isCopied ? 'COPIED!' : 'COPY PROMPT'}
+          </span>
         </button>
       </div>
     </footer>

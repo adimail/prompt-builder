@@ -28,7 +28,7 @@ export const RightPreviewPane = ({ width }: RightPreviewPaneProps) => {
   return (
     <aside
       style={{ width: `${width}px` }}
-      className="bg-neutral-900 p-4 border-l border-neutral-800 flex flex-col flex-shrink-0"
+      className="bg-neutral-900 p-4 border-l border-neutral-800 flex flex-col flex-shrink-0 h-full"
     >
       <div className="flex-1 overflow-y-auto">
         <div className="flex justify-between items-center mb-2">

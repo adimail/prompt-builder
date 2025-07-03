@@ -44,7 +44,7 @@ export const TemplatesView = () => {
 
   return (
     <div className="flex-1 flex-col p-6 lg:p-8 overflow-y-auto">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 md:flex-row flex-col gap-4">
         <h2 className="text-3xl font-bold tracking-wider">MY PROMPTS</h2>
         <div className="flex items-center gap-2">
           <button
@@ -52,7 +52,7 @@ export const TemplatesView = () => {
             className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Import prompts from a .json file"
           >
-            <Upload className="w-4 h-4" /> Import
+            <Upload className="w-4 h-4" /> <span className='hidden md:block'>Import</span>
           </button>
           <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
           <button
@@ -60,7 +60,7 @@ export const TemplatesView = () => {
             className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
             title="Export all prompts to a .json file"
           >
-            <Download className="w-4 h-4" /> Export All
+            <Download className="w-4 h-4" /> <span className='hidden md:block'>Export All</span>
           </button>
           <button
             onClick={() => setView('editor')}

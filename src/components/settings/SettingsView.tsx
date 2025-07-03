@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useSettingsStore } from '../../store/settingsStore';
 import { usePromptStore } from '../../store/promptStore';
+import { useUiStore } from '../../store/uiStore';
 import { Save, Eye, EyeOff, Edit, Trash2, AlertTriangle } from 'lucide-react';
+import { FontSizeControl } from '../ui/FontSizeControl';
 
 export const SettingsView = () => {
   const { apiKey, setApiKey } = useSettingsStore();
@@ -24,6 +26,7 @@ export const SettingsView = () => {
     if (confirmation) {
       usePromptStore.persist.clearStorage();
       useSettingsStore.persist.clearStorage();
+      useUiStore.persist.clearStorage();
       window.location.reload();
     }
   };
@@ -42,6 +45,10 @@ export const SettingsView = () => {
       </div>
 
       <div className="space-y-8">
+        <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-800">
+          <FontSizeControl />
+        </div>
+
         <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-800">
           <h3 className="text-xl font-semibold tracking-wider mb-4">Gemini API Key</h3>
           <p className="text-neutral-400 font-sans mb-4">

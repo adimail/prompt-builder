@@ -40,7 +40,7 @@ export const GalleryPreviewPane = ({ prompt, width }: GalleryPreviewPaneProps) =
     return (
       <aside
         style={{ width: `${width}px` }}
-        className="bg-neutral-900 p-4 border-l border-neutral-800 flex-shrink-0 flex items-center justify-center"
+        className="bg-neutral-900 p-4 border-l border-neutral-800 flex-shrink-0 flex items-center justify-center h-full"
       >
         <div className="text-center text-neutral-500">
           <p>Select a prompt to see the preview.</p>
@@ -52,7 +52,7 @@ export const GalleryPreviewPane = ({ prompt, width }: GalleryPreviewPaneProps) =
   return (
     <aside
       style={{ width: `${width}px` }}
-      className="bg-neutral-900 p-4 border-l border-neutral-800 flex flex-col flex-shrink-0"
+      className="bg-neutral-900 p-4 border-l border-neutral-800 flex flex-col flex-shrink-0 h-full"
     >
       <div className="flex-1 overflow-y-auto">
         <div className="flex justify-between items-center mb-2 gap-4">
