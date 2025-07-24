@@ -33,6 +33,12 @@ export function downloadJson(data: object, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
+export function cleanJsonString(str: string): string {
+  if (!str) return '';
+  const match = str.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  return match ? match[1].trim() : str.trim();
+}
+
 export function loadGalleryPromptIntoStorage(promptToLoad: Prompt): void {
   const STORAGE_KEY = 'promptBuilderState';
 

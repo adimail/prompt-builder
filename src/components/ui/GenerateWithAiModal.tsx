@@ -5,7 +5,7 @@ import { generatePromptFromScratch } from '../../services/geminiService';
 import { Prompt } from '../../types';
 import { Loader, Wand2, X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateId } from '../../utils';
+import { generateId, cleanJsonString } from '../../utils';
 
 interface GenerateWithAiModalProps {
   onClose: () => void;
@@ -27,7 +27,7 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const apiKey = useSettingsStore((state) => state.apiKey);
+  const { apiKey, model } = useSettingsStore();
   const { loadGeneratedPrompt, setView } = usePromptStore((state) => state.actions);
 
   const handleSubmit = async () => {
@@ -46,8 +46,9 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
     setError(null);
 
     try {
-      const jsonString = await generatePromptFromScratch(apiKey, requirements);
-      const generatedData = JSON.parse(jsonString);
+      const jsonString = await generatePromptFromScratch(apiKey, model, requirements);
+      const cleanedString = cleanJsonString(jsonString);
+      const generatedData = JSON.parse(cleanedString);
 
       if (!validatePromptData(generatedData)) {
         throw new Error('The AI returned data in an invalid format. Please try again.');
@@ -71,11 +72,10 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
     } catch (err) {
       console.error('Failed to generate prompt with AI:', err);
       let errorMessage = 'An unexpected error occurred. Please check the console for details.';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
       if (err instanceof SyntaxError) {
-        errorMessage = 'The AI returned data in an invalid format. Please try again.';
+        errorMessage = 'The AI returned data in an invalid JSON format. Please try again.';
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
       }
       setError(errorMessage);
     } finally {

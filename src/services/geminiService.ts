@@ -1,8 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import { Block, Prompt } from '../types';
 
+export type ConfigType = 'design' | 'architecture';
+
 export async function streamImprovedText(
   apiKey: string,
+  modelId: string,
   blockToImprove: Block,
   fullPrompt: Prompt,
   onStream: (chunk: string) => void
@@ -32,13 +35,13 @@ ${blockToImprove.content}
 Please provide **only** the improved text for this specific block. Do not add any preamble, explanation, or markdown formatting. Your output should be a direct replacement for the original block's content.`;
 
   const result = await ai.models.generateContentStream({
-    model: "gemini-1.5-flash",
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    model: modelId,
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
   });
 
   for await (const chunk of result) {
     const chunkText = chunk.text;
-    if (typeof chunkText === "string") {
+    if (typeof chunkText === 'string') {
       onStream(chunkText);
     }
   }
@@ -46,6 +49,7 @@ Please provide **only** the improved text for this specific block. Do not add an
 
 export async function generatePromptFromScratch(
   apiKey: string,
+  modelId: string,
   requirements: string
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey });
@@ -84,10 +88,47 @@ Generate a JSON object that adheres to the following structure.
 Now, generate the JSON for the user's requirement. Your entire response must be only the JSON object.`;
 
   const result = await ai.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
   });
 
-  // Fix: Access the response text properly
+  return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+export async function generateJsonConfig(
+  apiKey: string,
+  modelId: string,
+  configType: ConfigType,
+  sourceCode: string
+): Promise<string> {
+  const ai = new GoogleGenAI({ apiKey });
+
+  const designPrompt = `Analyze the provided source code and generate a JSON object representing its design schema. Extract information about colors, typography (font families, sizes, weights), spacing (padding, margins), borders (radius, width), and other relevant styling properties. The JSON should be structured logically into categories.`;
+
+  const architecturePrompt = `Analyze the provided source code and generate a JSON object representing its architecture. Identify the file structure, component hierarchy, data flow, state management, and any key architectural patterns. The JSON should provide a clear, structured overview of how the application is built.`;
+
+  const prompt = `You are an expert software architect and designer. Your task is to generate a structured JSON configuration file based on the user's provided source code and chosen configuration type.
+
+Configuration Type: "${configType}"
+
+Source Code to analyze:
+---
+${sourceCode}
+---
+
+**Instructions:**
+1.  Based on the configuration type, perform the following analysis:
+    -   **If "design":** ${designPrompt}
+    -   **If "architecture":** ${architecturePrompt}
+2.  Your entire response MUST be a single, valid JSON object.
+3.  Do not wrap the JSON in markdown backticks (\`\`\`json ... \`\`\`) or any other explanatory text. The output must be parsable JSON directly.
+
+Generate the JSON now.`;
+
+  const result = await ai.models.generateContent({
+    model: modelId,
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+  });
+
   return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }

@@ -18,9 +18,7 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
   };
 
   const handleDelete = () => {
-    if (confirm(`Are you sure you want to delete "${prompt.name}"? This cannot be undone.`)) {
-      deletePrompt(prompt.id);
-    }
+    deletePrompt(prompt.id);
   };
 
   return (

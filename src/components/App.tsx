@@ -11,12 +11,14 @@ import { SettingsView } from './settings/SettingsView';
 import { MobileControls } from './ui/MobileControls';
 import { cn } from '../utils/cn';
 import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
+import { ModelSelectionModal } from './ui/ModelSelectionModal';
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
   const currentPromptId = usePromptStore((state) => state.currentPromptId);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(280);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [isModelModalOpen, setIsModelModalOpen] = useState(false);
 
   const { fontSize, isLeftSidebarOpen, actions: uiActions } = useUiStore();
 
@@ -72,7 +74,10 @@ export const App = () => {
 
   return (
     <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono text-base">
-      <Header onGenerateWithAi={() => setIsGenerateModalOpen(true)} />
+      <Header
+        onGenerateWithAi={() => setIsGenerateModalOpen(true)}
+        onOpenModelSelection={() => setIsModelModalOpen(true)}
+      />
       <div className="flex flex-1 overflow-hidden relative">
         <div className="hidden md:flex">
           <LeftSidebar
@@ -113,6 +118,7 @@ export const App = () => {
       )}
 
       {isGenerateModalOpen && <GenerateWithAiModal onClose={() => setIsGenerateModalOpen(false)} />}
+      {isModelModalOpen && <ModelSelectionModal onClose={() => setIsModelModalOpen(false)} />}
     </div>
   );
 };

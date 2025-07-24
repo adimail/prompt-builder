@@ -24,7 +24,7 @@ export interface Prompt {
   blocks: Block[];
 }
 
-export type AppView = 'editor' | 'templates' | 'settings';
+export type AppView = 'editor' | 'templates' | 'settings' | 'json-config';
 
 export interface PersistedState {
   currentView: AppView;

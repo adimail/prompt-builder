@@ -1,6 +1,6 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
-import { PlusCircle, Folder, LayoutGrid, Settings, Wand2 } from 'lucide-react';
+import { PlusCircle, Folder, LayoutGrid, Settings, Wand2, FileJson } from 'lucide-react';
 
 interface LeftSidebarProps {
   width: number;
@@ -62,6 +62,15 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
             >
               <LayoutGrid className="w-5 h-5" /> Prompt Gallery
             </a>
+          </li>
+          <li>
+            <button
+              onClick={() => setView('json-config')}
+              className="flex items-center gap-3 p-2 rounded-md text-neutral-300 hover:bg-neutral-800 hover:text-white text-sm w-full"
+              title="Generate JSON Configs"
+            >
+              <FileJson className="w-5 h-5" /> JSON Configs
+            </button>
           </li>
           <li>
             <button
