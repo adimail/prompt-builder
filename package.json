@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack serve",
+    "dev": "webpack serve --mode development --open",
     "build": "webpack --mode production",
     "build:gh-pages": "GITHUB_PAGES=true webpack --mode production",
     "type-check": "tsc --noEmit"

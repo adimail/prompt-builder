@@ -12,6 +12,7 @@ import { MobileControls } from './ui/MobileControls';
 import { cn } from '../utils/cn';
 import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
 import { ModelSelectionModal } from './ui/ModelSelectionModal';
+import { JsonBuilderView } from './json-builder/JsonBuilderView';
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
@@ -65,6 +66,8 @@ export const App = () => {
         return <TemplatesView />;
       case 'settings':
         return <SettingsView />;
+      case 'json-builder':
+        return <JsonBuilderView />;
       default:
         return <Editor />;
     }

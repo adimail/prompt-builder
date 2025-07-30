@@ -4,7 +4,6 @@ module.exports = {
   content: [
     './public/index.html',
     './public/studio.html',
-    './public/gallery.html',
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {

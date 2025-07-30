@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { Block, Prompt } from '../types';
 
-export type ConfigType = 'design' | 'architecture';
+export type JsonBuilderType = 'Video' | 'Image' | 'UI' | 'Custom';
 
 export async function streamImprovedText(
   apiKey: string,
@@ -95,40 +95,45 @@ Now, generate the JSON for the user's requirement. Your entire response must be 
   return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-export async function generateJsonConfig(
+export async function streamJsonForBuilder(
   apiKey: string,
   modelId: string,
-  configType: ConfigType,
-  sourceCode: string
-): Promise<string> {
+  builderType: JsonBuilderType,
+  description: string,
+  onStream: (chunk: string) => void
+): Promise<void> {
   const ai = new GoogleGenAI({ apiKey });
 
-  const designPrompt = `Analyze the provided source code and generate a JSON object representing its design schema. Extract information about colors, typography (font families, sizes, weights), spacing (padding, margins), borders (radius, width), and other relevant styling properties. The JSON should be structured logically into categories.`;
+  const typeInstructions = {
+    Video: `Generate a JSON object representing a video. The user's description is: "${description}". The JSON should include fields like "title", "duration_seconds", "description", "tags" (an array of strings), and more. Infer the values from the user's description.`,
+    Image: `Generate a JSON object for an image generation prompt. The user's description is: "${description}". The JSON should include fields like "prompt_text", "negative_prompt", "style" (e.g., "photorealistic", "anime", "impressionistic"), "resolution" (e.g., "1024x1024"), "seed", and "steps". Infer the values from the user's description.`,
+    UI: `Generate a JSON object describing a UI component or layout. The user's description is: "${description}". The JSON should represent a tree structure, with fields like "component_name", "properties" (an object of key-value pairs), and "children" (an array of other UI component objects).`,
+    Custom: `Generate a well-structured JSON object based on the user's description. The user's description is: "${description}". Analyze the description to infer a logical schema, including keys, values, and nested structures. The structure should be intuitive and accurately represent the described data.`,
+  };
 
-  const architecturePrompt = `Analyze the provided source code and generate a JSON object representing its architecture. Identify the file structure, component hierarchy, data flow, state management, and any key architectural patterns. The JSON should provide a clear, structured overview of how the application is built.`;
+  const prompt = `You are an expert at creating structured JSON data based on natural language descriptions.
 
-  const prompt = `You are an expert software architect and designer. Your task is to generate a structured JSON configuration file based on the user's provided source code and chosen configuration type.
+Your task is to generate a JSON object based on the user's chosen type and description.
 
-Configuration Type: "${configType}"
-
-Source Code to analyze:
----
-${sourceCode}
----
+Builder Type: "${builderType}"
 
 **Instructions:**
-1.  Based on the configuration type, perform the following analysis:
-    -   **If "design":** ${designPrompt}
-    -   **If "architecture":** ${architecturePrompt}
+1.  Follow the specific instructions for the chosen builder type:
+    -   ${typeInstructions[builderType]}
 2.  Your entire response MUST be a single, valid JSON object.
 3.  Do not wrap the JSON in markdown backticks (\`\`\`json ... \`\`\`) or any other explanatory text. The output must be parsable JSON directly.
 
 Generate the JSON now.`;
 
-  const result = await ai.models.generateContent({
+  const result = await ai.models.generateContentStream({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
   });
 
-  return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  for await (const chunk of result) {
+    const chunkText = chunk.text;
+    if (typeof chunkText === 'string') {
+      onStream(chunkText);
+    }
+  }
 }

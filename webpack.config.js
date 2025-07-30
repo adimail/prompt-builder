@@ -9,7 +9,6 @@ module.exports = {
   entry: {
     main: './src/index.tsx',
     studio: './src/studio.tsx',
-    gallery: './src/gallery.tsx',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -52,12 +51,7 @@ module.exports = {
       template: './public/studio.html',
       filename: 'studio.html',
       chunks: ['studio'],
-    }),
-    new HtmlWebpackPlugin({
-      template: './public/gallery.html',
-      filename: 'gallery.html',
-      chunks: ['gallery'],
-    }),
+    })
   ],
   devServer: {
     static: {
@@ -68,7 +62,6 @@ module.exports = {
     historyApiFallback: {
       rewrites: [
         { from: /^\/studio/, to: '/studio.html' },
-        { from: /^\/gallery/, to: '/gallery.html' },
       ],
     },
   },

@@ -39,50 +39,6 @@ export function cleanJsonString(str: string): string {
   return match ? match[1].trim() : str.trim();
 }
 
-export function loadGalleryPromptIntoStorage(promptToLoad: Prompt): void {
-  const STORAGE_KEY = 'promptBuilderState';
-
-  const newPrompt: Prompt = {
-    ...promptToLoad,
-    id: generateId(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  try {
-    const storedStateJSON = localStorage.getItem(STORAGE_KEY);
-    let currentState: { state: PersistedState; version: number };
-
-    if (storedStateJSON) {
-      currentState = JSON.parse(storedStateJSON);
-    } else {
-      currentState = {
-        state: {
-          prompts: [],
-          currentPromptId: null,
-          currentView: 'editor',
-        },
-        version: 0,
-      };
-    }
-
-    if (!Array.isArray(currentState.state.prompts)) {
-      currentState.state.prompts = [];
-    }
-
-    currentState.state.prompts.unshift(newPrompt);
-    currentState.state.currentPromptId = newPrompt.id;
-    currentState.state.currentView = 'editor';
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
-
-    window.location.href = 'studio.html';
-  } catch (error) {
-    console.error('Failed to load prompt into storage:', error);
-    alert('Could not load the prompt. Your local storage might be corrupted or full.');
-  }
-}
-
 export function formatBytes(bytes: number, decimals: number = 2): string {
   if (!bytes || bytes === 0) return '0 Bytes';
   const k = 1024;
