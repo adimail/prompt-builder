@@ -13,10 +13,12 @@ import { cn } from '../utils/cn';
 import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
 import { ModelSelectionModal } from './ui/ModelSelectionModal';
 import { JsonBuilderView } from './json-builder/JsonBuilderView';
+import { AppView } from '../types';
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
   const currentPromptId = usePromptStore((state) => state.currentPromptId);
+  const { setView } = usePromptStore((state) => state.actions);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(280);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
@@ -26,6 +28,14 @@ export const App = () => {
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontSize}px`;
   }, [fontSize]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view') as AppView;
+    if (view && ['editor', 'templates', 'settings', 'json-builder'].includes(view)) {
+      setView(view);
+    }
+  }, [setView]);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {

@@ -1,5 +1,5 @@
 import { ImageGrid } from './ImageGrid';
-import { Rocket } from 'lucide-react';
+import { Rocket, FileJson } from 'lucide-react';
 
 export const HeroSection = () => {
   return (
@@ -17,13 +17,22 @@ export const HeroSection = () => {
             The ultimate client-side studio for prompt engineering. Visually construct, manage, and
             export your prompts with zero friction.
           </p>
-          <a
-            href="studio.html"
-            className="mt-8 px-8 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold text-lg inline-flex items-center gap-2"
-          >
-            <Rocket className="w-5 h-5" />
-            Launch Studio
-          </a>
+          <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
+            <a
+              href="studio.html?view=editor"
+              className="px-8 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-bold text-lg inline-flex items-center gap-2 w-full sm:w-auto justify-center"
+            >
+              <Rocket className="w-5 h-5" />
+              Launch Studio
+            </a>
+            <a
+              href="studio.html?view=json-builder"
+              className="px-8 py-4 bg-neutral-800 text-white rounded-lg hover:bg-neutral-700 font-bold text-lg inline-flex items-center gap-2 w-full sm:w-auto justify-center"
+            >
+              <FileJson className="w-5 h-5" />
+              JSON Builder
+            </a>
+          </div>
         </div>
 
         <div className="w-full md:w-2/3 h-[60vh] md:h-[70vh]">
