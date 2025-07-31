@@ -10,7 +10,14 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
   const { loadPrompt, deletePrompt, setView } = usePromptStore((state) => state.actions);
 
   const date = new Date(prompt.updatedAt || prompt.createdAt).toLocaleString();
-  const charCount = prompt.blocks.map((b) => b.content).join('').length;
+
+  const stats =
+    (prompt.format || 'blocks') === 'json'
+      ? `${prompt.content.length.toLocaleString()} chars`
+      : `${prompt.blocks.length} blocks • ${prompt.blocks
+          .map((b) => b.content)
+          .join('')
+          .length.toLocaleString()} chars`;
 
   const handleLoad = () => {
     loadPrompt(prompt.id);
@@ -18,7 +25,9 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
   };
 
   const handleDelete = () => {
-    deletePrompt(prompt.id);
+    if (confirm(`Are you sure you want to delete the prompt "${prompt.name}"?`)) {
+      deletePrompt(prompt.id);
+    }
   };
 
   return (
@@ -28,7 +37,7 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
           {prompt.name}
         </h3>
         <p className="text-sm text-neutral-400 font-sans">
-          Last updated: {date} • {prompt.blocks.length} blocks • {charCount.toLocaleString()} chars
+          Last updated: {date} • {stats}
         </p>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">

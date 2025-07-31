@@ -3,7 +3,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { usePromptStore } from '../../store/promptStore';
 import { streamJsonForBuilder, JsonBuilderType } from '../../services/geminiService';
 import { downloadJson, cleanJsonString } from '../../utils';
-import { Loader, Wand2, AlertTriangle, Download, FileJson, Edit, Copy } from 'lucide-react';
+import { Loader, Wand2, AlertTriangle, Download, FileJson, Save, Copy } from 'lucide-react';
 
 const RadioButton = ({
   id,
@@ -50,10 +50,10 @@ export const JsonBuilderView = () => {
   const [generatedJson, setGeneratedJson] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLTextAreaElement>(null);
 
   const { apiKey, model } = useSettingsStore();
-  const { setView } = usePromptStore((state) => state.actions);
+  const { setView, saveJsonPrompt } = usePromptStore((state) => state.actions);
 
   useEffect(() => {
     if (previewRef.current) {
@@ -117,6 +117,19 @@ export const JsonBuilderView = () => {
       downloadJson(data, `json-builder-${builderType.toLowerCase()}-output.json`);
     } catch (e) {
       alert('Cannot download, the generated JSON is not valid.');
+    }
+  };
+
+  const handleSave = () => {
+    if (!generatedJson || isLoading) return;
+    const name = prompt('Enter a name for this JSON prompt:', 'My JSON Prompt');
+    if (name && name.trim()) {
+      try {
+        JSON.parse(generatedJson);
+        saveJsonPrompt(name.trim(), generatedJson);
+      } catch (e) {
+        alert('Cannot save, the content is not valid JSON. Please correct it.');
+      }
     }
   };
 
@@ -194,37 +207,43 @@ export const JsonBuilderView = () => {
 
       <div className="flex-1 flex flex-col p-6 lg:p-8 overflow-y-auto bg-neutral-950">
         <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold tracking-wider text-neutral-300">GENERATED JSON PREVIEW</h3>
-            <div className="flex items-center gap-2">
-                <button
-                onClick={handleCopy}
-                disabled={!generatedJson || isLoading}
-                className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Copy JSON"
-                >
-                <Copy className="w-4 h-4" /> Copy
-                </button>
-                <button
-                onClick={handleDownload}
-                disabled={!generatedJson || isLoading}
-                className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Download JSON file"
-                >
-                <Download className="w-4 h-4" /> Download
-                </button>
-            </div>
+          <h3 className="font-bold tracking-wider text-neutral-300">GENERATED JSON</h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSave}
+              disabled={!generatedJson || isLoading}
+              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Save JSON as a prompt"
+            >
+              <Save className="w-4 h-4" /> Save
+            </button>
+            <button
+              onClick={handleCopy}
+              disabled={!generatedJson || isLoading}
+              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Copy JSON"
+            >
+              <Copy className="w-4 h-4" /> Copy
+            </button>
+            <button
+              onClick={handleDownload}
+              disabled={!generatedJson || isLoading}
+              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Download JSON file"
+            >
+              <Download className="w-4 h-4" /> Download
+            </button>
+          </div>
         </div>
-        <div
-          ref={previewRef}
-          className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto"
-        >
+        <div className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col">
           {generatedJson || isLoading ? (
-            <pre className="p-4 text-sm text-neutral-300 font-mono whitespace-pre-wrap">
-              <code>
-                {generatedJson}
-                {isLoading && <span className="inline-block animate-pulse">_</span>}
-              </code>
-            </pre>
+            <textarea
+              ref={previewRef}
+              value={generatedJson}
+              onChange={(e) => setGeneratedJson(e.target.value)}
+              readOnly={isLoading}
+              className="w-full h-full flex-1 bg-transparent p-4 text-sm text-neutral-300 font-mono whitespace-pre-wrap focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+            />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-neutral-600 p-4">
               <FileJson className="w-16 h-16 mb-4" />

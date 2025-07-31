@@ -16,12 +16,16 @@ export interface Block {
   isCollapsed: boolean;
 }
 
+export type PromptFormat = 'blocks' | 'json';
+
 export interface Prompt {
   id: string;
   name: string;
   createdAt: string;
   updatedAt: string;
+  format: PromptFormat;
   blocks: Block[];
+  content: string;
 }
 
 export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder';
@@ -44,10 +48,12 @@ export interface AppActions {
   deletePrompt: (promptId: string) => void;
   updateCurrentPromptName: (name: string) => void;
   importPrompts: (importedPrompts: any[]) => number;
+  saveJsonPrompt: (name: string, content: string) => void;
   addBlock: (type: BlockType, index?: number) => void;
   deleteBlock: (blockId: string) => void;
   duplicateBlock: (blockId: string) => void;
   updateBlockContent: (blockId: string, content: string) => void;
+  updatePromptContent: (content: string) => void;
   reorderBlocks: (draggedId: string, targetId: string | null) => void;
   toggleBlockCollapse: (blockId: string) => void;
 }

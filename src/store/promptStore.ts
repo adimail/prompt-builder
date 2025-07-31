@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppState, AppActions, Prompt, Block, BlockType } from '../types';
+import { AppState, Prompt, Block, BlockType, PromptFormat } from '../types';
 import { generateId } from '../utils';
 
 const createNewPromptObject = (name: string = 'Untitled Prompt'): Prompt => ({
@@ -8,7 +8,9 @@ const createNewPromptObject = (name: string = 'Untitled Prompt'): Prompt => ({
   name,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
+  format: 'blocks',
   blocks: [],
+  content: '',
 });
 
 export const usePromptStore = create<AppState>()(
@@ -66,14 +68,41 @@ export const usePromptStore = create<AppState>()(
             const existingIds = new Set(state.prompts.map((p) => p.id));
             const newPrompts = [...state.prompts];
             importedPrompts.forEach((p) => {
-              if (p.id && p.name && Array.isArray(p.blocks) && !existingIds.has(p.id)) {
-                newPrompts.push(p as Prompt);
+              if (p.id && p.name && !existingIds.has(p.id)) {
+                const promptToAdd = { ...p };
+                if (promptToAdd.format === 'json') {
+                  promptToAdd.blocks = [];
+                  promptToAdd.content =
+                    typeof promptToAdd.content === 'string' ? promptToAdd.content : '{}';
+                } else {
+                  promptToAdd.format = 'blocks';
+                  promptToAdd.blocks = Array.isArray(promptToAdd.blocks)
+                    ? promptToAdd.blocks
+                    : [];
+                  promptToAdd.content = '';
+                }
+                newPrompts.push(promptToAdd as Prompt);
                 importCount++;
               }
             });
             return { prompts: newPrompts };
           });
           return importCount;
+        },
+        saveJsonPrompt: (name, content) => {
+          const newPrompt: Prompt = {
+            id: generateId(),
+            name,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            format: 'json',
+            blocks: [],
+            content,
+          };
+          set((state) => ({
+            prompts: [newPrompt, ...state.prompts],
+          }));
+          alert(`JSON prompt "${name}" saved successfully!`);
         },
         addBlock: (type, index) =>
           set((state) => {
@@ -122,6 +151,18 @@ export const usePromptStore = create<AppState>()(
                 ? {
                     ...p,
                     blocks: p.blocks.map((b) => (b.id === blockId ? { ...b, content } : b)),
+                    updatedAt: new Date().toISOString(),
+                  }
+                : p
+            ),
+          })),
+        updatePromptContent: (content) =>
+          set((state) => ({
+            prompts: state.prompts.map((p) =>
+              p.id === state.currentPromptId
+                ? {
+                    ...p,
+                    content: content,
                     updatedAt: new Date().toISOString(),
                   }
                 : p

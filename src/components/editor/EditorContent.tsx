@@ -7,6 +7,31 @@ import { RightPreviewPane } from './RightPreviewPane';
 import { Eye } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
+const JsonEditorView = () => {
+  const currentPrompt = usePromptStore((state) =>
+    state.prompts.find((p) => p.id === state.currentPromptId)
+  );
+  const { updatePromptContent } = usePromptStore((state) => state.actions);
+
+  const debouncedUpdate = useCallback(debounce(updatePromptContent, 250), [updatePromptContent]);
+
+  if (!currentPrompt || currentPrompt.format !== 'json') {
+    return null;
+  }
+
+  return (
+    <div className="h-full">
+      <textarea
+        key={currentPrompt.id}
+        defaultValue={currentPrompt.content}
+        onChange={(e) => debouncedUpdate(e.target.value)}
+        className="w-full h-[70vh] p-3 rounded-md bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
+        placeholder="Enter JSON content here..."
+      />
+    </div>
+  );
+};
+
 export const EditorContent = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
   const [rightPaneWidth, setRightPaneWidth] = useState(450);
@@ -14,7 +39,7 @@ export const EditorContent = () => {
   const currentPrompt = usePromptStore((state) =>
     state.prompts.find((p) => p.id === state.currentPromptId)
   );
-  const updateCurrentPromptName = usePromptStore((state) => state.actions.updateCurrentPromptName);
+  const { updateCurrentPromptName } = usePromptStore((state) => state.actions);
   const { isRightSidebarOpen, actions: uiActions } = useUiStore();
 
   const debouncedUpdateName = useCallback(debounce(updateCurrentPromptName, 300), [
@@ -47,6 +72,8 @@ export const EditorContent = () => {
 
   if (!currentPrompt) return null;
 
+  const isBlockEditor = (currentPrompt.format || 'blocks') === 'blocks';
+
   return (
     <div className="flex-1 flex overflow-hidden">
       <div id="main-canvas-wrapper" className="flex-1 p-4 md:p-6 overflow-y-auto">
@@ -59,18 +86,20 @@ export const EditorContent = () => {
             onChange={(e) => debouncedUpdateName(e.target.value)}
             title="Click to rename prompt"
           />
-          <button
-            onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-            className="hidden md:flex flex-shrink-0 items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
-            title="Toggle Preview Pane"
-          >
-            <Eye className="w-4 h-4" /> Preview
-          </button>
+          {isBlockEditor && (
+            <button
+              onClick={() => setIsPreviewVisible(!isPreviewVisible)}
+              className="hidden md:flex flex-shrink-0 items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
+              title="Toggle Preview Pane"
+            >
+              <Eye className="w-4 h-4" /> Preview
+            </button>
+          )}
         </div>
-        <MainCanvas />
+        {isBlockEditor ? <MainCanvas /> : <JsonEditorView />}
       </div>
 
-      {isPreviewVisible && (
+      {isBlockEditor && isPreviewVisible && (
         <div className="hidden md:flex">
           <div
             onMouseDown={handleMouseDown}

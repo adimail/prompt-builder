@@ -59,6 +59,8 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
         name: generatedData.name,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        format: 'blocks',
+        content: '',
         blocks: generatedData.blocks.map((block: any) => ({
           id: generateId(),
           type: block.type,
