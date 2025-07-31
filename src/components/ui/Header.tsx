@@ -1,4 +1,4 @@
-import { Star, Wand2, Cpu } from 'lucide-react';
+import { Wand2, Cpu } from 'lucide-react';
 import { useSettingsStore } from '../../store/settingsStore';
 import { availableModels } from '../../config/models';
 
@@ -34,12 +34,6 @@ export const Header = ({ onGenerateWithAi, onOpenModelSelection }: HeaderProps) 
         >
           <Wand2 className="w-4 h-4" />
           <span className="hidden md:block">New with AI</span>
-        </button>
-        <button
-          className="w-9 h-9 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-orange-500"
-          title="Star"
-        >
-          <Star className="w-5 h-5" />
         </button>
       </div>
     </header>

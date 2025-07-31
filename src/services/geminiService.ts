@@ -1,7 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { Block, Prompt } from '../types';
-
-export type JsonBuilderType = 'Video' | 'Image' | 'UI' | 'Custom';
+import { JsonBuilderType } from '../types';
 
 export async function streamImprovedText(
   apiKey: string,

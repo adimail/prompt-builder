@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSettingsStore } from '../../store/settingsStore';
 import { usePromptStore } from '../../store/promptStore';
-import { streamJsonForBuilder, JsonBuilderType } from '../../services/geminiService';
+import { streamJsonForBuilder } from '../../services/geminiService';
+import { JsonBuilderType } from '../../types';
 import { downloadJson, cleanJsonString } from '../../utils';
-import { Loader, Wand2, AlertTriangle, Download, FileJson, Save, Copy } from 'lucide-react';
+import { Loader, Wand2, AlertTriangle, Download, FileJson, Save, Copy, Check } from 'lucide-react';
 
 const RadioButton = ({
   id,
@@ -44,16 +45,66 @@ const builderOptions: { id: JsonBuilderType; label: string }[] = [
   { id: 'Custom', label: 'Custom' },
 ];
 
+const getPlaceholderText = (builderType: JsonBuilderType): string => {
+  switch (builderType) {
+    case 'Video':
+      return 'e.g., "Ocean waves crashing on rocky shore, slow motion, cinematic style"';
+    
+    case 'Image':
+      return 'e.g., "Abstract geometric shapes in vibrant colors, modern art style"';
+    
+    case 'UI':
+      return 'e.g., "Login form with email field, password input, and submit button"';
+    
+    case 'Custom':
+      return 'e.g., "Customer order with items, shipping address, and payment method"';
+    
+    default:
+      return 'e.g., "Describe your data structure and desired JSON format"';
+  }
+};
+
 export const JsonBuilderView = () => {
   const [builderType, setBuilderType] = useState<JsonBuilderType>('Video');
   const [description, setDescription] = useState('');
   const [generatedJson, setGeneratedJson] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const previewRef = useRef<HTMLTextAreaElement>(null);
 
   const { apiKey, model } = useSettingsStore();
   const { setView, saveJsonPrompt } = usePromptStore((state) => state.actions);
+
+  useEffect(() => {
+    try {
+      const savedStateJSON = localStorage.getItem('jsonBuilderLiveState');
+      if (savedStateJSON) {
+        const savedState = JSON.parse(savedStateJSON);
+        if (savedState.builderType) {
+          setBuilderType(savedState.builderType);
+        }
+        if (savedState.description) {
+          setDescription(savedState.description);
+        }
+        if (savedState.generatedJson) {
+          setGeneratedJson(savedState.generatedJson);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load JSON builder state from localStorage:', err);
+      localStorage.removeItem('jsonBuilderLiveState');
+    }
+  }, []);
+
+  useEffect(() => {
+    const stateToSave = {
+      builderType,
+      description,
+      generatedJson,
+    };
+    localStorage.setItem('jsonBuilderLiveState', JSON.stringify(stateToSave));
+  }, [builderType, description, generatedJson]);
 
   useEffect(() => {
     if (previewRef.current) {
@@ -62,8 +113,12 @@ export const JsonBuilderView = () => {
   }, [generatedJson]);
 
   const handleCopy = () => {
-    if (!generatedJson || isLoading) return;
+    if (!generatedJson || isLoading || isCopied) return;
     navigator.clipboard.writeText(generatedJson);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 3000);
   };
 
   const handleGenerate = async () => {
@@ -134,12 +189,12 @@ export const JsonBuilderView = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-      <div className="flex-1 flex flex-col p-6 lg:p-8 overflow-y-auto lg:border-r border-neutral-800">
-        <h2 className="text-3xl font-bold tracking-wider mb-5">JSON BUILDER</h2>
+    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-screen">
+      <div className="flex-1 flex flex-col p-6 lg:p-8 lg:border-r border-neutral-800 min-h-0">
+        <h2 className="text-3xl font-bold tracking-wider mb-5 flex-shrink-0">JSON BUILDER</h2>
 
-        <div className="space-y-6">
-          <div>
+        <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex-shrink-0 mb-6">
             <label className="text-sm font-medium text-neutral-300 mb-2 block">
               1. CHOOSE A BUILDER TYPE
             </label>
@@ -158,10 +213,10 @@ export const JsonBuilderView = () => {
             </div>
           </div>
 
-          <div>
+          <div className="flex flex-col flex-1 min-h-0">
             <label
               htmlFor="description-input"
-              className="text-sm font-medium text-neutral-300 mb-2 block"
+              className="text-sm font-medium text-neutral-300 mb-2 block flex-shrink-0"
             >
               2. DESCRIBE WHAT YOU WANT TO BUILD
             </label>
@@ -169,21 +224,20 @@ export const JsonBuilderView = () => {
               id="description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 rounded-md bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
-              rows={15}
-              placeholder="e.g., A user profile with a name, email, and a list of friends. The name should be 'John Doe'."
+              className="w-full p-3 rounded-md bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono flex-1 resize-none"
+              placeholder={getPlaceholderText(builderType)}
               disabled={isLoading}
             />
           </div>
 
           {error && (
-            <div className="bg-red-900/30 overflow-hidden border border-red-500/50 text-red-400 p-3 rounded-md text-sm flex items-start gap-2">
+            <div className="bg-red-900/30 overflow-hidden border border-red-500/50 text-red-400 p-3 rounded-md text-sm flex items-start gap-2 mt-4 flex-shrink-0">
               <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <div>
+          <div className="mt-6 flex-shrink-0">
             <button
               onClick={handleGenerate}
               disabled={isLoading || !description.trim()}
@@ -205,8 +259,8 @@ export const JsonBuilderView = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 lg:p-8 overflow-y-auto bg-neutral-950">
-        <div className="flex justify-between items-center mb-4">
+      <div className="flex-1 flex flex-col p-6 lg:p-8 bg-neutral-950 min-h-0">
+        <div className="flex justify-between items-center mb-4 flex-shrink-0">
           <h3 className="font-bold tracking-wider text-neutral-300">GENERATED JSON</h3>
           <div className="flex items-center gap-2">
             <button
@@ -219,11 +273,19 @@ export const JsonBuilderView = () => {
             </button>
             <button
               onClick={handleCopy}
-              disabled={!generatedJson || isLoading}
+              disabled={!generatedJson || isLoading || isCopied}
               className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               title="Copy JSON"
             >
-              <Copy className="w-4 h-4" /> Copy
+              {isCopied ? (
+                <>
+                  <Check className="w-4 h-4 text-green-500" /> Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" /> Copy
+                </>
+              )}
             </button>
             <button
               onClick={handleDownload}
@@ -235,7 +297,7 @@ export const JsonBuilderView = () => {
             </button>
           </div>
         </div>
-        <div className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col">
+        <div className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col min-h-0">
           {generatedJson || isLoading ? (
             <textarea
               ref={previewRef}

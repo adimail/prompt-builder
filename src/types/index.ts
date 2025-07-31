@@ -8,6 +8,7 @@ export const blockTypes = [
 ] as const;
 
 export type BlockType = (typeof blockTypes)[number];
+export type JsonBuilderType = 'Video' | 'Image' | 'UI' | 'Custom';
 
 export interface Block {
   id: string;
