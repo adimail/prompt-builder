@@ -109,9 +109,8 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
         </ul>
       </nav>
 
-
       <div className="flex-grow flex flex-col gap-6">
-        <BlockLibrary />
+        {currentView === 'editor' && <BlockLibrary />}
         <ModelConfig />
       </div>
     </aside>

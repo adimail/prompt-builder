@@ -1,5 +1,6 @@
 import { useSettingsStore } from '../../store/settingsStore';
 import { SimpleSlider } from '../ui/SimpleSlider';
+import { ModelRadarChart } from './RadarChart';
 
 export const ModelConfig = () => {
   const { temperature, topP, setTemperature, setTopP } = useSettingsStore();
@@ -9,7 +10,10 @@ export const ModelConfig = () => {
       <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2 border-t border-neutral-800 pt-6">
         Model Configuration
       </h2>
-      <div className="space-y-4 px-2">
+
+      <ModelRadarChart temperature={temperature} topP={topP} />
+
+      <div className="space-y-4 px-2 mt-4">
         <SimpleSlider
           id="temperature"
           label="Temperature"

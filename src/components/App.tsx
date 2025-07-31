@@ -3,7 +3,6 @@ import { usePromptStore } from '../store/promptStore';
 import { useUiStore } from '../store/uiStore';
 import { Header } from './ui/Header';
 import { LeftSidebar } from './ui/LeftSidebar';
-import { Footer } from './ui/Footer';
 import { NoPromptView } from './editor/NoPromptView';
 import { EditorContent } from './editor/EditorContent';
 import { TemplatesView } from './templates/TemplatesView';
@@ -122,7 +121,6 @@ export const App = () => {
 
         <main className="flex-1 flex flex-col overflow-hidden">{renderMainView()}</main>
       </div>
-      {currentView === 'editor' && currentPromptId && <Footer />}
 
       {showMobileControls && (
         <div className="md:hidden">
