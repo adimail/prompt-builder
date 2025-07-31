@@ -1,8 +1,7 @@
 import { useState, useRef } from 'react';
 import { usePromptStore } from '../../store/promptStore';
-import { downloadJson } from '../../utils';
 import { TemplateCard } from './TemplateCard';
-import { Upload, Download, Edit, Folder, FileText, FileJson } from 'lucide-react';
+import { Edit, Folder, FileText, FileJson } from 'lucide-react';
 import { StorageStats } from '../ui/StorageStats';
 import { cn } from '../../utils/cn';
 
@@ -17,18 +16,6 @@ export const TemplatesView = () => {
   const filteredPrompts = [...prompts]
     .filter((p) => (p.format || 'blocks') === activeTab)
     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-
-  const handleExport = () => {
-    if (prompts.length === 0) {
-      alert('There are no prompts to export.');
-      return;
-    }
-    downloadJson(prompts, `prompt-builder-export-${new Date().toISOString().split('T')[0]}.json`);
-  };
-
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,13 +36,6 @@ export const TemplatesView = () => {
       <div className="flex justify-between items-center mb-6 md:flex-row flex-col gap-4">
         <h2 className="text-3xl font-bold tracking-wider">MY PROMPTS</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleImportClick}
-            className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
-            title="Import prompts from a .json file"
-          >
-            <Upload className="w-4 h-4" /> <span className="hidden md:block">Import</span>
-          </button>
           <input
             type="file"
             ref={fileInputRef}
@@ -63,13 +43,6 @@ export const TemplatesView = () => {
             accept=".json"
             onChange={handleFileChange}
           />
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
-            title="Export all prompts to a .json file"
-          >
-            <Download className="w-4 h-4" /> <span className="hidden md:block">Export All</span>
-          </button>
           <button
             onClick={() => setView('editor')}
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
@@ -119,7 +92,7 @@ export const TemplatesView = () => {
             <p className="text-neutral-500 mt-2 font-sans">
               {activeTab === 'blocks'
                 ? 'Click "New Prompt" in the sidebar to create one!'
-                : 'Go to the JSON Builder to generate and save one!'}
+                : 'Go to the JSON Prompt Builder to generate and save one!'}
             </p>
           </div>
         )}

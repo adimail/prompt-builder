@@ -14,9 +14,9 @@ export const Header = ({ onGenerateWithAi, onOpenModelSelection }: HeaderProps) 
   return (
     <header className="flex items-center justify-between px-4 h-16 bg-neutral-900 border-b border-neutral-800 shadow-sm flex-shrink-0">
       <div className="flex items-center gap-3">
-        <h1 className="md:text-xl text-sm font-bold text-orange-500 tracking-wider">
+        <a href='/' className="md:text-xl text-sm font-bold text-orange-500 tracking-wider">
           PROMPT BUILDER
-        </h1>
+        </a>
       </div>
       <div className="flex items-center gap-2">
         <button

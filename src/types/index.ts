@@ -47,6 +47,7 @@ export interface AppActions {
   createNewPrompt: (name: string) => void;
   loadGeneratedPrompt: (prompt: Prompt) => void;
   deletePrompt: (promptId: string) => void;
+  deleteAllPrompts: () => void;
   updateCurrentPromptName: (name: string) => void;
   importPrompts: (importedPrompts: any[]) => number;
   saveJsonPrompt: (name: string, content: string) => void;

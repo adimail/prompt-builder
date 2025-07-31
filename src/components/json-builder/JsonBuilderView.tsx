@@ -92,7 +92,7 @@ export const JsonBuilderView = () => {
         }
       }
     } catch (err) {
-      console.error('Failed to load JSON builder state from localStorage:', err);
+      console.error('Failed to load JSON Prompt Builder state from localStorage:', err);
       localStorage.removeItem('jsonBuilderLiveState');
     }
   }, []);
@@ -191,7 +191,7 @@ export const JsonBuilderView = () => {
   return (
     <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-screen">
       <div className="flex-1 flex flex-col p-6 lg:p-8 lg:border-r border-neutral-800 min-h-0">
-        <h2 className="text-3xl font-bold tracking-wider mb-5 flex-shrink-0">JSON BUILDER</h2>
+        <h2 className="text-3xl font-bold tracking-wider mb-5 flex-shrink-0">JSON Prompt Builder</h2>
 
         <div className="flex flex-col flex-1 min-h-0">
           <div className="flex-shrink-0 mb-6">

@@ -52,6 +52,11 @@ export const usePromptStore = create<AppState>()(
             }
             return { prompts: newPrompts, currentPromptId: newCurrentId };
           }),
+        deleteAllPrompts: () =>
+          set({
+            prompts: [],
+            currentPromptId: null,
+          }),
         updateCurrentPromptName: (name) =>
           set((state) => {
             const newPrompts = state.prompts.map((p) =>

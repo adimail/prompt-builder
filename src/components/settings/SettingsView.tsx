@@ -7,7 +7,7 @@ import { FontSizeControl } from '../ui/FontSizeControl';
 
 export const SettingsView = () => {
   const { apiKey, setApiKey } = useSettingsStore();
-  const setView = usePromptStore((state) => state.actions.setView);
+  const { setView, deleteAllPrompts } = usePromptStore((state) => state.actions);
 
   const [currentKey, setCurrentKey] = useState(apiKey);
   const [isSaved, setIsSaved] = useState(false);
@@ -28,6 +28,16 @@ export const SettingsView = () => {
       useSettingsStore.persist.clearStorage();
       useUiStore.persist.clearStorage();
       window.location.reload();
+    }
+  };
+
+  const handleDeleteAllPrompts = () => {
+    const confirmation = confirm(
+      'ARE YOU SURE?\n\nThis will permanently delete all your prompts. This action cannot be undone.'
+    );
+    if (confirmation) {
+      deleteAllPrompts();
+      alert('All prompts have been deleted.');
     }
   };
 
@@ -110,17 +120,33 @@ export const SettingsView = () => {
             <AlertTriangle className="w-5 h-5" />
             Danger Zone
           </h3>
-          <p className="text-red-400/80 font-sans mb-4">
-            This action is irreversible. All your saved prompts and settings will be permanently
-            deleted from this browser.
-          </p>
-          <button
-            onClick={handleClearAllData}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-bold"
-          >
-            <Trash2 className="w-4 h-4" />
-            Clear All Data
-          </button>
+          <div className="space-y-4">
+            <div>
+              <p className="text-red-400/80 font-sans mb-2">
+                Permanently delete all saved prompts. Your settings and API key will not be affected.
+              </p>
+              <button
+                onClick={handleDeleteAllPrompts}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-bold"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete All Prompts
+              </button>
+            </div>
+            <div className="border-t border-red-500/30 pt-4">
+              <p className="text-red-400/80 font-sans mb-2">
+                This action is irreversible. All your saved prompts and settings will be permanently
+                deleted from this browser.
+              </p>
+              <button
+                onClick={handleClearAllData}
+                className="flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 text-sm font-bold"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear All Data
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
