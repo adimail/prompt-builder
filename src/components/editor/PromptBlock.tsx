@@ -50,7 +50,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
     state.prompts.find((p) => p.id === state.currentPromptId)
   );
   const setView = usePromptStore((state) => state.actions.setView);
-  const { apiKey, model } = useSettingsStore();
+  const { apiKey, model, temperature, topP } = useSettingsStore();
   const [isImproving, setIsImproving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -69,7 +69,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
     textareaRef.current.value = '';
 
     try {
-      await streamImprovedText(apiKey, model, block, currentPrompt, (chunk) => {
+      await streamImprovedText(apiKey, model, temperature, topP, block, currentPrompt, (chunk) => {
         fullResponse += chunk;
         if (textareaRef.current) {
           textareaRef.current.value = fullResponse;

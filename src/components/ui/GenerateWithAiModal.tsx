@@ -27,7 +27,7 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { apiKey, model } = useSettingsStore();
+  const { apiKey, model, temperature, topP } = useSettingsStore();
   const { loadGeneratedPrompt, setView } = usePromptStore((state) => state.actions);
 
   const handleSubmit = async () => {
@@ -46,7 +46,13 @@ export const GenerateWithAiModal = ({ onClose }: GenerateWithAiModalProps) => {
     setError(null);
 
     try {
-      const jsonString = await generatePromptFromScratch(apiKey, model, requirements);
+      const jsonString = await generatePromptFromScratch(
+        apiKey,
+        model,
+        temperature,
+        topP,
+        requirements
+      );
       const cleanedString = cleanJsonString(jsonString);
       const generatedData = JSON.parse(cleanedString);
 

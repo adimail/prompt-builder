@@ -5,6 +5,8 @@ import { JsonBuilderType } from '../types';
 export async function streamImprovedText(
   apiKey: string,
   modelId: string,
+  temperature: number,
+  topP: number,
   blockToImprove: Block,
   fullPrompt: Prompt,
   onStream: (chunk: string) => void
@@ -36,6 +38,7 @@ Please provide **only** the improved text for this specific block. Do not add an
   const result = await ai.models.generateContentStream({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: { temperature, topP },
   });
 
   for await (const chunk of result) {
@@ -49,6 +52,8 @@ Please provide **only** the improved text for this specific block. Do not add an
 export async function generatePromptFromScratch(
   apiKey: string,
   modelId: string,
+  temperature: number,
+  topP: number,
   requirements: string
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey });
@@ -89,6 +94,7 @@ Now, generate the JSON for the user's requirement. Your entire response must be 
   const result = await ai.models.generateContent({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: { temperature, topP },
   });
 
   return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -97,6 +103,8 @@ Now, generate the JSON for the user's requirement. Your entire response must be 
 export async function streamJsonForBuilder(
   apiKey: string,
   modelId: string,
+  temperature: number,
+  topP: number,
   builderType: JsonBuilderType,
   description: string,
   onStream: (chunk: string) => void
@@ -127,6 +135,7 @@ Generate the JSON now.`;
   const result = await ai.models.generateContentStream({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: { temperature, topP },
   });
 
   for await (const chunk of result) {

@@ -1,7 +1,8 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
-import { PlusCircle, Folder, LayoutGrid, Settings, Wand2, FileJson, Edit } from 'lucide-react';
+import { PlusCircle, Folder, Settings, Wand2, FileJson, Edit } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { ModelConfig } from '../editor/ModelConfig';
 
 interface LeftSidebarProps {
   width: number;
@@ -108,10 +109,10 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
         </ul>
       </nav>
 
-      <div className="border-t border-neutral-800"></div>
 
-      <div className="flex-grow flex flex-col">
+      <div className="flex-grow flex flex-col gap-6">
         <BlockLibrary />
+        <ModelConfig />
       </div>
     </aside>
   );

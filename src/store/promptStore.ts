@@ -107,7 +107,6 @@ export const usePromptStore = create<AppState>()(
           set((state) => ({
             prompts: [newPrompt, ...state.prompts],
           }));
-          alert(`JSON prompt "${name}" saved successfully!`);
         },
         addBlock: (type, index) =>
           set((state) => {

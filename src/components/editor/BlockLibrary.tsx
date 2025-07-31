@@ -9,7 +9,7 @@ export const BlockLibrary = () => {
 
   return (
     <div>
-      <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2">
+      <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2 border-t border-neutral-800 pt-6">
         Block Library
       </h2>
       <div className="grid grid-cols-2 gap-2">

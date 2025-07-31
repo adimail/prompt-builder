@@ -73,7 +73,7 @@ export const JsonBuilderView = () => {
   const [isCopied, setIsCopied] = useState(false);
   const previewRef = useRef<HTMLTextAreaElement>(null);
 
-  const { apiKey, model } = useSettingsStore();
+  const { apiKey, model, temperature, topP } = useSettingsStore();
   const { setView, saveJsonPrompt } = usePromptStore((state) => state.actions);
 
   useEffect(() => {
@@ -138,7 +138,7 @@ export const JsonBuilderView = () => {
     let fullResponse = '';
 
     try {
-      await streamJsonForBuilder(apiKey, model, builderType, description, (chunk) => {
+      await streamJsonForBuilder(apiKey, model, temperature, topP, builderType, description, (chunk) => {
         fullResponse += chunk;
         setGeneratedJson(fullResponse);
       });
