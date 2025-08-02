@@ -112,8 +112,60 @@ export async function streamJsonForBuilder(
   const ai = new GoogleGenAI({ apiKey });
 
   const typeInstructions = {
-    Video: `Generate a JSON object representing a video. The user's description is: "${description}". The JSON should include fields like "title", "duration_seconds", "description", "tags" (an array of strings), and more. Infer the values from the user's description. If specific settings like lighting or color schemes are not explicitly mentioned, infer appropriate settings based on the overall description.`,
-    Image: `Generate a JSON object for an image generation prompt. The user's description is: "${description}". The JSON should include fields like "prompt_text", "negative_prompt", "style" (e.g., "photorealistic", "anime", "impressionistic"), "resolution" (e.g., "1024x1024"), "seed", and "steps". Infer the values from the user's description. If details like lighting, colors, or environment are missing, infer suitable values to create a coherent and visually appealing image.`,
+    Video: `You are an AI that converts a user’s video description into a reproducible, richly detailed JSON for video generation.
+
+Input: “${description}”
+
+  Base fields (for reproduction):
+  - prompt_text
+  - negative_prompt
+  - style
+  - resolution
+  - seed
+  - steps
+  - background
+  - lighting
+
+  Dynamic fields (inferred to enrich scene and motion):  
+  - character_count (int)  
+  - atmosphere (string)  
+  - color_theme (string)  
+  - time_setting (string)  
+  - object_details (array of { type, quantity })  
+  - behavior_profiles (array of { object_type, behavior, speed, path })  
+  - interactions (array of { subject, object, interaction_type })  
+  - camera_movement (string)  
+  - transitions (array of strings)  
+  - soundtrack (string)  
+  - special_effects (array of strings)  
+
+For each behavior_profile, infer how each object moves (e.g. “butterflies fluttering along a spiral path at slow speed”) and for interactions describe how elements relate (e.g. “water ripples reacting to stones thrown”). Populate all fields to fully realize the user’s vision and ensure seed, steps, duration, and frame_rate guarantee identical output each time.`,
+    Image: `You are an AI that turns a user's image description into a reproducible, richly detailed JSON for image generation.
+
+Input: “${description}”
+
+Output: a JSON object containing:
+
+  Base fields (for reproduction):  
+  - prompt_text  
+  - negative_prompt  
+  - style  
+  - resolution  
+  - seed  
+  - steps  
+  - background  
+  - lighting  
+
+  Dynamic fields (inferred from the scene to enrich detail):  
+  - character_count (int)  
+  - atmosphere (string)  
+  - color_theme (string)  
+  - action (string)  
+  - object_details (array of objects with type and quantity)  
+  - time_setting (string)  
+  - special_effects (array of strings)  
+
+Populate each field with types and values that match and enhance the user's description. Ensure the seed and steps guarantee identical output each time.`,
     UI: `Generate a JSON object describing a UI component or layout. The user's description is: "${description}". The JSON should represent a tree structure, with fields like "component_name", "properties" (an object of key-value pairs), and "children" (an array of other UI component objects).`,
     Custom: `Generate a well-structured JSON object based on the user's description. The user's description is: "${description}". Analyze the description to infer a logical schema, including keys, values, and nested structures. The structure should be intuitive and accurately represent the described data. If any settings or properties are not explicitly mentioned, infer reasonable defaults or values based on the context of the description.`,
   };
