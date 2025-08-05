@@ -9,6 +9,8 @@ export const blockTypes = [
 
 export type BlockType = (typeof blockTypes)[number];
 export type JsonBuilderType = 'Video' | 'Image' | 'UI' | 'Custom';
+export const paraphraseModes = ['Funny', 'Strict', 'Grammar Fix', 'Custom'] as const;
+export type ParaphraseMode = (typeof paraphraseModes)[number];
 
 export interface Block {
   id: string;
@@ -29,7 +31,7 @@ export interface Prompt {
   content: string;
 }
 
-export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder';
+export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder' | 'paraphrase';
 
 export interface PersistedState {
   currentView: AppView;

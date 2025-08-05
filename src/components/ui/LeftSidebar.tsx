@@ -1,6 +1,6 @@
 import { usePromptStore } from '../../store/promptStore';
 import { BlockLibrary } from '../editor/BlockLibrary';
-import { PlusCircle, Folder, Settings, Wand2, FileJson, Edit } from 'lucide-react';
+import { PlusCircle, Folder, Settings, Wand2, FileJson, Edit, Repeat } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { ModelConfig } from '../editor/ModelConfig';
 
@@ -67,6 +67,12 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
       label: 'JSON Builder',
       icon: FileJson,
       title: 'Generate structured JSON',
+    },
+    {
+      view: 'paraphrase',
+      label: 'Paraphrase',
+      icon: Repeat,
+      title: 'Paraphrase your text',
     },
     { view: 'settings', label: 'Settings', icon: Settings, title: 'Configure application settings' },
   ];

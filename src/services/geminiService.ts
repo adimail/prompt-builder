@@ -1,6 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { Block, Prompt } from '../types';
-import { JsonBuilderType } from '../types';
+import { Block, Prompt, JsonBuilderType, ParaphraseMode } from '../types';
 
 export async function streamImprovedText(
   apiKey: string,
@@ -183,6 +182,68 @@ Builder Type: "${builderType}"
 3.  Do not wrap the JSON in markdown backticks (\`\`\`json ... \`\`\`) or any other explanatory text. The output must be parsable JSON directly.
 
 Generate the JSON now.`;
+
+  const result = await ai.models.generateContentStream({
+    model: modelId,
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: { temperature, topP },
+  });
+
+  for await (const chunk of result) {
+    const chunkText = chunk.text;
+    if (typeof chunkText === 'string') {
+      onStream(chunkText);
+    }
+  }
+}
+
+export async function streamParaphrasedText(
+  apiKey: string,
+  modelId: string,
+  temperature: number,
+  topP: number,
+  mode: ParaphraseMode,
+  customInstruction: string,
+  textToParaphrase: string,
+  numberOfVariations: number,
+  onStream: (chunk: string) => void
+): Promise<void> {
+  const ai = new GoogleGenAI({ apiKey });
+
+  let instruction = '';
+  switch (mode) {
+    case 'Funny':
+      instruction =
+        'Rewrite the following text to be more humorous, witty, and funny. Use clever wordplay and exaggeration if appropriate.';
+      break;
+    case 'Strict':
+      instruction =
+        'Rewrite the following text to be more formal, professional, and strict. Use precise language and a serious tone.';
+      break;
+    case 'Grammar Fix':
+      instruction =
+        'Correct any grammatical errors, spelling mistakes, and punctuation issues in the following text. Improve sentence structure and clarity while preserving the original meaning.';
+      break;
+    case 'Custom':
+      instruction = customInstruction || 'Paraphrase the following text.';
+      break;
+  }
+
+  const variationInstruction =
+    numberOfVariations > 1
+      ? `Generate ${numberOfVariations} different versions of the text. Separate each version with "---VARIATION_SEPARATOR---". Do not number the variations or add any other formatting between them.`
+      : 'Generate one version of the text.';
+
+  const prompt = `${instruction}
+
+${variationInstruction}
+
+Here is the text:
+---
+${textToParaphrase}
+---
+
+Provide only the paraphrased text as your response. Do not include any preamble, explanation, or markdown formatting.`;
 
   const result = await ai.models.generateContentStream({
     model: modelId,

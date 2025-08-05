@@ -12,6 +12,7 @@ import { cn } from '../utils/cn';
 import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
 import { ModelSelectionModal } from './ui/ModelSelectionModal';
 import { JsonBuilderView } from './json-builder/JsonBuilderView';
+import { ParaphraseView } from './paraphrase/ParaphraseView';
 import { AppView } from '../types';
 
 export const App = () => {
@@ -31,7 +32,10 @@ export const App = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as AppView;
-    if (view && ['editor', 'templates', 'settings', 'json-builder'].includes(view)) {
+    if (
+      view &&
+      ['editor', 'templates', 'settings', 'json-builder', 'paraphrase'].includes(view)
+    ) {
       setView(view);
     }
   }, [setView]);
@@ -77,6 +81,8 @@ export const App = () => {
         return <SettingsView />;
       case 'json-builder':
         return <JsonBuilderView />;
+      case 'paraphrase':
+        return <ParaphraseView />;
       default:
         return <Editor />;
     }

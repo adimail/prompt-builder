@@ -20,15 +20,20 @@ export const usePromptStore = create<AppState>()(
       prompts: [],
       currentPromptId: null,
       actions: {
-        setView: (view) => set({ currentView: view }),
+        setView: (view) => {
+          set({ currentView: view });
+          const url = new URL(window.location.href);
+          url.searchParams.set('view', view);
+          window.history.pushState({}, '', url);
+        },
         loadPrompt: (promptId) => set({ currentPromptId: promptId }),
         createNewPrompt: (name) => {
           const newPrompt = createNewPromptObject(name);
           set((state) => ({
             prompts: [newPrompt, ...state.prompts],
             currentPromptId: newPrompt.id,
-            currentView: 'editor',
           }));
+          get().actions.setView('editor');
         },
         loadGeneratedPrompt: (prompt) => {
           set((state) => {
@@ -39,9 +44,9 @@ export const usePromptStore = create<AppState>()(
             return {
               prompts: [prompt, ...state.prompts],
               currentPromptId: prompt.id,
-              currentView: 'editor',
             };
           });
+          get().actions.setView('editor');
         },
         deletePrompt: (promptId) =>
           set((state) => {
