@@ -3,36 +3,24 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { usePromptStore } from '../../store/promptStore';
 import { streamParaphrasedText } from '../../services/geminiService';
 import { ParaphraseMode, paraphraseModes } from '../../types';
-import { Loader, Wand2, AlertTriangle, Copy, Check, Repeat } from 'lucide-react';
+import {
+  Loader,
+  Wand2,
+  AlertTriangle,
+  Copy,
+  Check,
+  Repeat,
+  ChevronDown,
+  XCircle,
+} from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { SimpleSlider } from '../ui/SimpleSlider';
-
-const ModeButton = ({
-  label,
-  isActive,
-  onClick,
-}: {
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      'px-4 py-2 rounded-md text-sm font-bold transition-colors w-full',
-      isActive
-        ? 'bg-orange-500 text-white'
-        : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
-    )}
-  >
-    {label}
-  </button>
-);
 
 const PARAPHRASE_STATE_KEY = 'paraphraseViewLiveState';
 
 export const ParaphraseView = () => {
   const [mode, setMode] = useState<ParaphraseMode>('Funny');
+  const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [customInstruction, setCustomInstruction] = useState('');
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState<string[]>([]);
@@ -44,6 +32,7 @@ export const ParaphraseView = () => {
     typeof window !== 'undefined' ? window.innerWidth / 2 : 600
   );
   const outputContainerRef = useRef<HTMLDivElement>(null);
+  const modeDropdownRef = useRef<HTMLDivElement>(null);
 
   const { apiKey, model, temperature, topP } = useSettingsStore();
   const { setView } = usePromptStore((state) => state.actions);
@@ -81,6 +70,18 @@ export const ParaphraseView = () => {
       outputContainerRef.current.scrollTop = outputContainerRef.current.scrollHeight;
     }
   }, [outputText]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
+        setIsModeDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [modeDropdownRef]);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -138,7 +139,9 @@ export const ParaphraseView = () => {
         numberOfVariations,
         (chunk) => {
           fullResponse += chunk;
-          const variations = fullResponse.split('---VARIATION_SEPARATOR---').map((v) => v.trimStart());
+          const variations = fullResponse
+            .split('---VARIATION_SEPARATOR---')
+            .map((v) => v.trimStart());
           setOutputText(variations);
         }
       );
@@ -168,6 +171,12 @@ export const ParaphraseView = () => {
     }, 2000);
   };
 
+  const handleClear = () => {
+    setInputText('');
+    setOutputText([]);
+    setError(null);
+  };
+
   return (
     <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-screen">
       <div className="flex-1 flex flex-col p-6 lg:p-8 min-h-0 overflow-y-auto">
@@ -181,10 +190,37 @@ export const ParaphraseView = () => {
             <label className="text-sm font-medium text-neutral-300 mb-2 block">
               1. CHOOSE A MODE
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {paraphraseModes.map((m) => (
-                <ModeButton key={m} label={m} isActive={mode === m} onClick={() => setMode(m)} />
-              ))}
+            <div className="relative" ref={modeDropdownRef}>
+              <button
+                onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
+                className="w-full flex items-center justify-between p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+              >
+                <span>{mode}</span>
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform ${
+                    isModeDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              {isModeDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full bg-neutral-800 border border-neutral-700 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  <ul className="py-1">
+                    {paraphraseModes.map((m) => (
+                      <li key={m}>
+                        <button
+                          onClick={() => {
+                            setMode(m);
+                            setIsModeDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-orange-500/20 hover:text-white"
+                        >
+                          {m}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
@@ -279,10 +315,21 @@ export const ParaphraseView = () => {
       >
         <div className="flex justify-between items-center mb-4 flex-shrink-0">
           <h3 className="font-bold tracking-wider text-neutral-300">OUTPUT</h3>
+          <button
+            onClick={handleClear}
+            disabled={!inputText && outputText.length === 0}
+            className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Clear input and output"
+          >
+            <XCircle className="w-4 h-4" /> Clear
+          </button>
         </div>
-        <div className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col min-h-0">
+        <div
+          ref={outputContainerRef}
+          className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col min-h-0"
+        >
           {isLoading || outputText.some((v) => v.trim()) ? (
-            <div ref={outputContainerRef} className="p-4 space-y-4">
+            <div className="p-4 space-y-4">
               {outputText.map((variation, index) => (
                 <div
                   key={index}

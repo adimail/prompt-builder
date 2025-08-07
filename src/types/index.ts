@@ -9,7 +9,18 @@ export const blockTypes = [
 
 export type BlockType = (typeof blockTypes)[number];
 export type JsonBuilderType = 'Video' | 'Image' | 'UI' | 'Custom';
-export const paraphraseModes = ['Funny', 'Strict', 'Grammar Fix', 'Custom'] as const;
+export const paraphraseModes = [
+  'Funny',
+  'Strict',
+  'Casual',
+  'Professional',
+  'Poetic',
+  'Academic',
+  'Simplify',
+  'Expand',
+  'Grammar Fix',
+  'Custom',
+] as const;
 export type ParaphraseMode = (typeof paraphraseModes)[number];
 
 export interface Block {

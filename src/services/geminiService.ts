@@ -220,6 +220,30 @@ export async function streamParaphrasedText(
       instruction =
         'Rewrite the following text to be more formal, professional, and strict. Use precise language and a serious tone.';
       break;
+    case 'Casual':
+      instruction =
+        'Rewrite the following text in a more casual, relaxed, and conversational tone. Use everyday language.';
+      break;
+    case 'Professional':
+      instruction =
+        'Rewrite the following text to be more professional, formal, and suitable for a business context. Avoid slang and use clear, concise language.';
+      break;
+    case 'Poetic':
+      instruction =
+        'Rewrite the following text into a more poetic and artistic form. Use figurative language, imagery, and rhythm.';
+      break;
+    case 'Academic':
+      instruction =
+        'Rewrite the following text in a formal, academic style. Use sophisticated vocabulary and a structured, objective tone.';
+      break;
+    case 'Simplify':
+      instruction =
+        "Rewrite the following text to be simpler and easier to understand. Use basic vocabulary and short sentences. Explain it like I'm 5 years old.";
+      break;
+    case 'Expand':
+      instruction =
+        'Expand on the following text, adding more detail, explanation, and examples to make it more comprehensive. Elaborate on the key points.';
+      break;
     case 'Grammar Fix':
       instruction =
         'Correct any grammatical errors, spelling mistakes, and punctuation issues in the following text. Improve sentence structure and clarity while preserving the original meaning.';
