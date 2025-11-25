@@ -6,6 +6,12 @@ export interface GeminiModel {
 
 export const availableModels: GeminiModel[] = [
   {
+    id: 'gemini-3-pro-preview',
+    name: 'Gemini 3 Pro Preview',
+    description:
+      "Google's most powerful agentic and coding model. As a 'thinking model', it reasons before responding, offering state-of-the-art performance in complex instruction following and multimodal understanding with a 1M token context window.",
+  },
+  {
     id: 'gemini-2.5-pro',
     name: 'Gemini 2.5 Pro',
     description:
