@@ -48,55 +48,66 @@ Please provide **only** the improved text for this specific block. Do not add an
   }
 }
 
-export async function generatePromptFromScratch(
+export async function streamPromptGeneration(
   apiKey: string,
   modelId: string,
   temperature: number,
   topP: number,
-  requirements: string
-): Promise<string> {
+  requirements: string,
+  onStream: (chunk: string) => void
+): Promise<void> {
   const ai = new GoogleGenAI({ apiKey });
 
-  const prompt = `You are an expert prompt architect. Your task is to generate a structured prompt in JSON format based on a user's requirements.
+  const prompt = `You are an expert prompt architect. Your task is to generate a structured prompt based on a user's requirements.
 
 The user wants a prompt for: "${requirements}"
 
-Generate a JSON object that adheres to the following structure.
-- The root object should have a "name" (string) and a "blocks" (array) property.
-- The "name" should be a concise, descriptive title for the prompt, derived from the user's requirements.
-- Each object in the "blocks" array represents a part of the prompt and must have:
-  - "type": A string, one of "Role", "Instruction", "Context", "Constraint", "Variable", "Example".
-  - "content": A string containing the text for that block.
+**OUTPUT FORMAT INSTRUCTIONS:**
+Do NOT output JSON.
+Output the prompt as a series of blocks.
+Each block must start with a specific separator containing the block type, followed by the content.
 
-**IMPORTANT RULES:**
-1.  Analyze the user's requirements and break them down into logical blocks. Use a variety of block types where appropriate.
-2.  The generated JSON MUST be a single, valid JSON object. Do not wrap it in markdown backticks or any other text.
-3.  Do NOT include "id", "createdAt", "updatedAt", or "isCollapsed" fields. These will be added by the application.
+The separator format is exactly:
+===
+~~ TYPE
+===
 
-**EXAMPLE OUTPUT FORMAT:**
-{
-  "name": "Creative Story Writer",
-  "blocks": [
-    {
-      "type": "Role",
-      "content": "You are a master storyteller, capable of weaving intricate plots and developing compelling characters."
-    },
-    {
-      "type": "Instruction",
-      "content": "Write a short story about a young cartographer who discovers a map that leads to a city that moves."
-    }
-  ]
-}
+Where TYPE is one of: NAME, Role, Instruction, Context, Constraint, Variable, Example.
 
-Now, generate the JSON for the user's requirement. Your entire response must be only the JSON object.`;
+**IMPORTANT:**
+1. The FIRST block MUST be of type "NAME". The content should be a concise, descriptive title for the prompt.
+2. Subsequent blocks should be the actual prompt components (Role, Instruction, etc.).
+3. Start immediately with the first block separator.
+4. Do not add any introductory text or markdown code blocks.
 
-  const result = await ai.models.generateContent({
+Example Output:
+===
+~~ NAME
+===
+Data Analysis Assistant
+===
+~~ Role
+===
+You are an expert data scientist.
+===
+~~ Instruction
+===
+Analyze the following dataset...
+
+Generate the prompt now.`;
+
+  const result = await ai.models.generateContentStream({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     config: { temperature, topP },
   });
 
-  return result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  for await (const chunk of result) {
+    const chunkText = chunk.text;
+    if (typeof chunkText === 'string') {
+      onStream(chunkText);
+    }
+  }
 }
 
 export async function streamJsonForBuilder(

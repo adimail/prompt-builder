@@ -9,18 +9,31 @@ import { TemplatesView } from './templates/TemplatesView';
 import { SettingsView } from './settings/SettingsView';
 import { MobileControls } from './ui/MobileControls';
 import { cn } from '../utils/cn';
-import { GenerateWithAiModal } from './ui/GenerateWithAiModal';
 import { ModelSelectionModal } from './ui/ModelSelectionModal';
 import { JsonBuilderView } from './json-builder/JsonBuilderView';
 import { ParaphraseView } from './paraphrase/ParaphraseView';
 import { AppView } from '../types';
+import { Sparkles } from 'lucide-react';
+
+const AiCreationPlaceholder = () => (
+  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6 overflow-y-auto bg-black/50">
+    <div className="p-6 bg-neutral-900/50 rounded-full border border-neutral-800">
+      <Sparkles className="w-16 h-16 text-orange-500 animate-pulse" />
+    </div>
+    <div>
+      <h2 className="text-3xl font-bold tracking-wider text-white">AI PROMPT CREATOR</h2>
+      <p className="mt-4 text-lg text-neutral-400 font-sans max-w-md mx-auto">
+        Use the sidebar to describe what you need. The AI will construct a structured prompt for you automatically.
+      </p>
+    </div>
+  </div>
+);
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
   const currentPromptId = usePromptStore((state) => state.currentPromptId);
   const { setView } = usePromptStore((state) => state.actions);
   const [leftSidebarWidth, setLeftSidebarWidth] = useState(280);
-  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
 
   const { fontSize, isLeftSidebarOpen, actions: uiActions } = useUiStore();
@@ -34,7 +47,7 @@ export const App = () => {
     const view = params.get('view') as AppView;
     if (
       view &&
-      ['editor', 'templates', 'settings', 'json-builder', 'paraphrase'].includes(view)
+      ['editor', 'templates', 'settings', 'json-builder', 'paraphrase', 'ai-create'].includes(view)
     ) {
       setView(view);
     }
@@ -83,6 +96,8 @@ export const App = () => {
         return <JsonBuilderView />;
       case 'paraphrase':
         return <ParaphraseView />;
+      case 'ai-create':
+        return <AiCreationPlaceholder />;
       default:
         return <Editor />;
     }
@@ -93,14 +108,14 @@ export const App = () => {
   return (
     <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono text-base">
       <Header
-        onGenerateWithAi={() => setIsGenerateModalOpen(true)}
+        onGenerateWithAi={() => setView('ai-create')}
         onOpenModelSelection={() => setIsModelModalOpen(true)}
       />
       <div className="flex flex-1 overflow-hidden relative">
         <div className="hidden md:flex">
           <LeftSidebar
             width={leftSidebarWidth}
-            onGenerateWithAi={() => setIsGenerateModalOpen(true)}
+            onGenerateWithAi={() => setView('ai-create')}
           />
           <div
             onMouseDown={handleMouseDown}
@@ -115,7 +130,7 @@ export const App = () => {
             isLeftSidebarOpen ? 'translate-x-0' : '-translate-x-[500px]'
           )}
         >
-          <LeftSidebar width={320} onGenerateWithAi={() => setIsGenerateModalOpen(true)} />
+          <LeftSidebar width={320} onGenerateWithAi={() => setView('ai-create')} />
         </div>
 
         {isLeftSidebarOpen && (
@@ -134,7 +149,6 @@ export const App = () => {
         </div>
       )}
 
-      {isGenerateModalOpen && <GenerateWithAiModal onClose={() => setIsGenerateModalOpen(false)} />}
       {isModelModalOpen && <ModelSelectionModal onClose={() => setIsModelModalOpen(false)} />}
     </div>
   );
