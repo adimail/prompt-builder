@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { Block, BlockType } from '../../types';
@@ -53,6 +53,11 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
   const { apiKey, model, temperature, topP } = useSettingsStore();
   const [isImproving, setIsImproving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [localContent, setLocalContent] = useState(block.content);
+
+  useEffect(() => {
+    setLocalContent(block.content);
+  }, [block.content]);
 
   const debouncedUpdate = useCallback(debounce(updateBlockContent, 250), [updateBlockContent]);
 
@@ -66,13 +71,13 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
 
     setIsImproving(true);
     let fullResponse = '';
-    textareaRef.current.value = '';
+    setLocalContent('');
 
     try {
       await streamImprovedText(apiKey, model, temperature, topP, block, currentPrompt, (chunk) => {
         fullResponse += chunk;
+        setLocalContent(fullResponse);
         if (textareaRef.current) {
-          textareaRef.current.value = fullResponse;
           textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
         }
       });
@@ -80,9 +85,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
     } catch (error) {
       console.error('Error improving prompt:', error);
       alert('Failed to improve prompt. Please check your API key and console for details.');
-      if (textareaRef.current) {
-        textareaRef.current.value = block.content;
-      }
+      setLocalContent(block.content);
     } finally {
       setIsImproving(false);
     }
@@ -153,8 +156,11 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
           className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
           rows={4}
           placeholder={`Enter ${block.type.toLowerCase()} content here...`}
-          defaultValue={block.content}
-          onChange={(e) => debouncedUpdate(block.id, e.target.value)}
+          value={localContent}
+          onChange={(e) => {
+            setLocalContent(e.target.value);
+            debouncedUpdate(block.id, e.target.value);
+          }}
         ></textarea>
       </div>
     </div>
