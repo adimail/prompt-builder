@@ -32,8 +32,8 @@ export const TemplatesView = () => {
   };
 
   return (
-    <div className="flex-1 flex-col p-6 lg:p-8 overflow-y-auto">
-      <div className="flex justify-between items-center mb-6 md:flex-row flex-col gap-4">
+    <div className="flex-1 flex-col overflow-y-auto p-6 lg:p-8">
+      <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
         <h2 className="text-3xl font-bold tracking-wider">MY PROMPTS</h2>
         <div className="flex items-center gap-2">
           <input
@@ -45,37 +45,37 @@ export const TemplatesView = () => {
           />
           <button
             onClick={() => setView('editor')}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
+            className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600"
             title="Return to the prompt editor"
           >
-            <Edit className="w-4 h-4" /> Back to Editor
+            <Edit className="h-4 w-4" /> Back to Editor
           </button>
         </div>
       </div>
 
-      <div className="flex border-b border-neutral-800 mb-6">
+      <div className="mb-6 flex border-b border-neutral-800">
         <button
           onClick={() => setActiveTab('blocks')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 text-sm font-semibold tracking-wider border-b-2 transition-colors',
+            'flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-semibold tracking-wider transition-colors',
             activeTab === 'blocks'
-              ? 'text-orange-500 border-orange-500'
-              : 'text-neutral-400 border-transparent hover:text-white'
+              ? 'border-orange-500 text-orange-500'
+              : 'border-transparent text-neutral-400 hover:text-white'
           )}
         >
-          <FileText className="w-4 h-4" />
+          <FileText className="h-4 w-4" />
           Text Prompts
         </button>
         <button
           onClick={() => setActiveTab('json')}
           className={cn(
-            'flex items-center gap-2 px-4 py-2 text-sm font-semibold tracking-wider border-b-2 transition-colors',
+            'flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-semibold tracking-wider transition-colors',
             activeTab === 'json'
-              ? 'text-orange-500 border-orange-500'
-              : 'text-neutral-400 border-transparent hover:text-white'
+              ? 'border-orange-500 text-orange-500'
+              : 'border-transparent text-neutral-400 hover:text-white'
           )}
         >
-          <FileJson className="w-4 h-4" />
+          <FileJson className="h-4 w-4" />
           JSON Prompts
         </button>
       </div>
@@ -84,12 +84,12 @@ export const TemplatesView = () => {
         {filteredPrompts.length > 0 ? (
           filteredPrompts.map((prompt) => <TemplateCard key={prompt.id} prompt={prompt} />)
         ) : (
-          <div className="text-center py-20 border-2 border-dashed border-neutral-800 rounded-lg">
-            <Folder className="w-16 h-16 text-neutral-700 mx-auto" />
-            <p className="text-neutral-500 mt-4">
+          <div className="rounded-lg border-2 border-dashed border-neutral-800 py-20 text-center">
+            <Folder className="mx-auto h-16 w-16 text-neutral-700" />
+            <p className="mt-4 text-neutral-500">
               You don't have any saved {activeTab === 'blocks' ? 'text' : 'JSON'} prompts yet.
             </p>
-            <p className="text-neutral-500 mt-2 font-sans">
+            <p className="mt-2 font-sans text-neutral-500">
               {activeTab === 'blocks'
                 ? 'Click "New Prompt" in the sidebar to create one!'
                 : 'Go to the JSON Prompt Builder to generate and save one!'}

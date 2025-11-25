@@ -14,7 +14,7 @@ export const FontSizeControl = () => {
 
   return (
     <div>
-      <h3 className="text-xl font-semibold tracking-wider mb-4">Appearance</h3>
+      <h3 className="mb-4 text-xl font-semibold tracking-wider">Appearance</h3>
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-neutral-300">Global Font Size</label>
         <div className="flex items-center gap-2 rounded-md bg-neutral-800 p-1">
@@ -33,7 +33,7 @@ export const FontSizeControl = () => {
             </button>
           ))}
         </div>
-        <p className="text-xs text-neutral-500 font-sans">
+        <p className="font-sans text-xs text-neutral-500">
           Adjust the base font size for the entire application.
         </p>
       </div>

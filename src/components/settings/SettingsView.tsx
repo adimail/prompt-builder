@@ -42,26 +42,26 @@ export const SettingsView = () => {
   };
 
   return (
-    <div className="flex-1 flex-col p-6 lg:p-8 overflow-y-auto max-w-2xl mx-auto ">
-      <div className="flex justify-between items-center my-10">
+    <div className="mx-auto max-w-2xl flex-1 flex-col overflow-y-auto p-6 lg:p-8 ">
+      <div className="my-10 flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-wider">SETTINGS</h2>
         <button
           onClick={() => setView('editor')}
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
+          className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600"
           title="Return to the prompt editor"
         >
-          <Edit className="w-4 h-4" /> Back to Editor
+          <Edit className="h-4 w-4" /> Back to Editor
         </button>
       </div>
 
       <div className="space-y-8">
-        <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-800">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6">
           <FontSizeControl />
         </div>
 
-        <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-800">
-          <h3 className="text-xl font-semibold tracking-wider mb-4">Gemini API Key</h3>
-          <p className="text-neutral-400 font-sans mb-4">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6">
+          <h3 className="mb-4 text-xl font-semibold tracking-wider">Gemini API Key</h3>
+          <p className="mb-4 font-sans text-neutral-400">
             To use the "Improve Prompt" feature, you need a Google AI Gemini API key. You can
             generate one for free from the{' '}
             <a
@@ -84,65 +84,62 @@ export const SettingsView = () => {
                 type={isKeyVisible ? 'text' : 'password'}
                 value={currentKey}
                 onChange={(e) => setCurrentKey(e.target.value)}
-                className="w-full p-3 pr-12 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
+                className="w-full rounded-md border border-neutral-700 bg-neutral-800 p-3 pr-12 font-mono text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                 placeholder="Enter your Gemini API key"
               />
               <button
                 onClick={() => setIsKeyVisible(!isKeyVisible)}
-                className="absolute inset-y-0 right-0 px-3 flex items-center text-neutral-400 hover:text-white"
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-neutral-400 hover:text-white"
                 title={isKeyVisible ? 'Hide API Key' : 'Show API Key'}
               >
-                {isKeyVisible ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
+                {isKeyVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            <p className="text-xs text-neutral-500 font-sans">
+            <p className="font-sans text-xs text-neutral-500">
               Your key is stored securely in your browser's local storage.
             </p>
           </div>
           <div className="mt-6">
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold disabled:opacity-50"
+              className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-50"
               disabled={isSaved || currentKey === apiKey}
             >
-              <Save className="w-4 h-4" />
+              <Save className="h-4 w-4" />
               {isSaved ? 'Saved!' : 'Save API Key'}
             </button>
           </div>
         </div>
 
-        <div className="bg-red-900/20 p-6 rounded-lg border border-red-500/50">
-          <h3 className="text-xl font-semibold tracking-wider mb-2 text-red-400 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
+        <div className="rounded-lg border border-red-500/50 bg-red-900/20 p-6">
+          <h3 className="mb-2 flex items-center gap-2 text-xl font-semibold tracking-wider text-red-400">
+            <AlertTriangle className="h-5 w-5" />
             Danger Zone
           </h3>
           <div className="space-y-4">
             <div>
-              <p className="text-red-400/80 font-sans mb-2">
-                Permanently delete all saved prompts. Your settings and API key will not be affected.
+              <p className="mb-2 font-sans text-red-400/80">
+                Permanently delete all saved prompts. Your settings and API key will not be
+                affected.
               </p>
               <button
                 onClick={handleDeleteAllPrompts}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-bold"
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Delete All Prompts
               </button>
             </div>
             <div className="border-t border-red-500/30 pt-4">
-              <p className="text-red-400/80 font-sans mb-2">
+              <p className="mb-2 font-sans text-red-400/80">
                 This action is irreversible. All your saved prompts and settings will be permanently
                 deleted from this browser.
               </p>
               <button
                 onClick={handleClearAllData}
-                className="flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 text-sm font-bold"
+                className="flex items-center gap-2 rounded-md bg-red-800 px-4 py-2 text-sm font-bold text-white hover:bg-red-900"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Clear All Data
               </button>
             </div>

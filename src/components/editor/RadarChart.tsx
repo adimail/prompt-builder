@@ -32,14 +32,36 @@ const calculateChartData = (temperature: number, topP: number): ChartData[] => {
 };
 
 const FullScreenIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="h-5 w-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+    />
   </svg>
 );
 
 const ExitFullScreenIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="h-5 w-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25"
+    />
   </svg>
 );
 
@@ -51,10 +73,7 @@ interface ModelRadarChartProps {
 export const ModelRadarChart = ({ temperature, topP }: ModelRadarChartProps) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const data = useMemo(
-    () => calculateChartData(temperature, topP),
-    [temperature, topP]
-  );
+  const data = useMemo(() => calculateChartData(temperature, topP), [temperature, topP]);
 
   const chartContainerClasses = isFullScreen
     ? 'fixed inset-0 z-50 bg-neutral-900/95 backdrop-blur-sm p-8 flex items-center justify-center'
@@ -64,31 +83,20 @@ export const ModelRadarChart = ({ temperature, topP }: ModelRadarChartProps) => 
     <div className={chartContainerClasses}>
       <button
         onClick={() => setIsFullScreen(!isFullScreen)}
-        className="absolute top-2 right-2 z-10 p-2 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-neutral-800"
+        className="absolute right-2 top-2 z-10 rounded-full p-2 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white"
         aria-label={isFullScreen ? 'Exit full screen' : 'Enter full screen'}
       >
         {isFullScreen ? <ExitFullScreenIcon /> : <FullScreenIcon />}
       </button>
 
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart
-          cx="50%"
-          cy="50%"
-          outerRadius="80%"
-          data={data}
-          style={{ outline: 'none' }}
-        >
+        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data} style={{ outline: 'none' }}>
           <PolarGrid stroke="#404040" />
           <PolarAngleAxis
             dataKey="subject"
             tick={{ fill: '#a3a3a3', fontSize: isFullScreen ? 16 : 12 }}
           />
-          <PolarRadiusAxis
-            angle={30}
-            domain={[0, 10]}
-            tick={false}
-            axisLine={false}
-          />
+          <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
           <Radar
             name="Model Profile"
             dataKey="value"

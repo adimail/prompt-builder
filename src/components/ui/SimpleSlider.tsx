@@ -21,11 +21,11 @@ export const SimpleSlider = ({
 }: SimpleSliderProps) => {
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <label htmlFor={id} className="text-xs font-medium text-neutral-300">
           {label}
         </label>
-        <span className="text-xs font-mono text-white bg-neutral-700 px-1.5 py-0.5 rounded">
+        <span className="rounded bg-neutral-700 px-1.5 py-0.5 font-mono text-xs text-white">
           {displayValue || value}
         </span>
       </div>
@@ -37,7 +37,7 @@ export const SimpleSlider = ({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+        className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-neutral-700 accent-orange-500"
       />
     </div>
   );

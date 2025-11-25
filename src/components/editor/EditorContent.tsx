@@ -25,7 +25,7 @@ const JsonEditorView = () => {
         key={currentPrompt.id}
         defaultValue={currentPrompt.content}
         onChange={(e) => debouncedUpdate(e.target.value)}
-        className="w-full h-[70vh] p-3 rounded-md bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
+        className="h-[70vh] w-full rounded-md border border-neutral-700 bg-neutral-900 p-3 font-mono text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
         placeholder="Enter JSON content here..."
       />
     </div>
@@ -83,13 +83,13 @@ export const EditorContent = () => {
   const isBlockEditor = (currentPrompt.format || 'blocks') === 'blocks';
 
   return (
-    <div className="flex-1 flex overflow-hidden">
-      <div id="main-canvas-wrapper" className="flex-1 p-4 md:p-6 overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
+    <div className="flex flex-1 overflow-hidden">
+      <div id="main-canvas-wrapper" className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="mb-6 flex items-center justify-between">
           <input
             key={currentPrompt.id}
             type="text"
-            className="text-2xl font-bold bg-transparent rounded-md -ml-2 px-2 py-1 w-full focus:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-orange-500 tracking-wider"
+            className="-ml-2 w-full rounded-md bg-transparent px-2 py-1 text-2xl font-bold tracking-wider focus:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
             value={localName}
             onChange={(e) => {
               setLocalName(e.target.value);
@@ -100,10 +100,10 @@ export const EditorContent = () => {
           {isBlockEditor && (
             <button
               onClick={() => setIsPreviewVisible(!isPreviewVisible)}
-              className="hidden md:flex flex-shrink-0 items-center gap-2 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
+              className="hidden flex-shrink-0 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white md:flex"
               title="Toggle Preview Pane"
             >
-              <Eye className="w-4 h-4" /> Preview
+              <Eye className="h-4 w-4" /> Preview
             </button>
           )}
         </div>
@@ -114,7 +114,7 @@ export const EditorContent = () => {
         <div className="hidden md:flex">
           <div
             onMouseDown={handleMouseDown}
-            className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
+            className="w-1 cursor-col-resize bg-neutral-800 transition-colors hover:bg-orange-500/50"
             title="Resize preview pane"
           />
           <RightPreviewPane width={rightPaneWidth} />
@@ -123,7 +123,7 @@ export const EditorContent = () => {
 
       <div
         className={cn(
-          'md:hidden fixed inset-y-0 right-0 z-40 w-80 bg-neutral-900 transform transition-transform duration-300 ease-in-out',
+          'fixed inset-y-0 right-0 z-40 w-80 transform bg-neutral-900 transition-transform duration-300 ease-in-out md:hidden',
           isRightSidebarOpen ? 'translate-x-0' : 'translate-x-full'
         )}
       >
@@ -133,7 +133,7 @@ export const EditorContent = () => {
       {isRightSidebarOpen && (
         <div
           onClick={() => uiActions.closeSidebars()}
-          className="md:hidden fixed inset-0 bg-black/60 z-30"
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
         ></div>
       )}
     </div>

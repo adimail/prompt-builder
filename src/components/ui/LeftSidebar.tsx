@@ -6,18 +6,18 @@ import { ModelConfig } from '../editor/ModelConfig';
 import { streamPromptGeneration } from '../../services/geminiService';
 import { generateId } from '../../utils';
 import { BlockType, blockTypes } from '../../types';
-import { 
-  PlusCircle, 
-  Folder, 
-  Settings, 
-  Wand2, 
-  FileJson, 
-  Edit, 
-  Repeat, 
-  X, 
-  Loader, 
-  AlertTriangle, 
-  ArrowRight 
+import {
+  PlusCircle,
+  Folder,
+  Settings,
+  Wand2,
+  FileJson,
+  Edit,
+  Repeat,
+  X,
+  Loader,
+  AlertTriangle,
+  ArrowRight,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -51,7 +51,7 @@ const NavItem = ({
   if (href) {
     return (
       <a href={href} className={className} title={title}>
-        <Icon className="w-5 h-5 flex-shrink-0" />
+        <Icon className="h-5 w-5 flex-shrink-0" />
         <span>{label}</span>
       </a>
     );
@@ -59,19 +59,20 @@ const NavItem = ({
 
   return (
     <button onClick={onClick} className={className} title={title}>
-      <Icon className="w-5 h-5 flex-shrink-0" />
+      <Icon className="h-5 w-5 flex-shrink-0" />
       <span>{label}</span>
     </button>
   );
 };
 
-
-const parseBlocksFromText = (text: string): { name: string | null; blocks: { type: BlockType; content: string }[] } => {
+const parseBlocksFromText = (
+  text: string
+): { name: string | null; blocks: { type: BlockType; content: string }[] } => {
   const blocks: { type: BlockType; content: string }[] = [];
   let name: string | null = null;
-  
+
   const regex = /(?:^|\n)===\s*\n?~~\s*([a-zA-Z]+)\s*\n?===\s*\n?/g;
-  
+
   let match;
   let lastIndex = 0;
   let currentType: string | null = null;
@@ -82,7 +83,9 @@ const parseBlocksFromText = (text: string): { name: string | null; blocks: { typ
       if (currentType === 'NAME') {
         name = content;
       } else {
-        const type = blockTypes.includes(currentType as any) ? (currentType as BlockType) : 'Instruction';
+        const type = blockTypes.includes(currentType as any)
+          ? (currentType as BlockType)
+          : 'Instruction';
         blocks.push({ type, content });
       }
     }
@@ -96,7 +99,9 @@ const parseBlocksFromText = (text: string): { name: string | null; blocks: { typ
     if (currentType === 'NAME') {
       name = content;
     } else {
-      const type = blockTypes.includes(currentType as any) ? (currentType as BlockType) : 'Instruction';
+      const type = blockTypes.includes(currentType as any)
+        ? (currentType as BlockType)
+        : 'Instruction';
       blocks.push({ type, content });
     }
   }
@@ -105,7 +110,12 @@ const parseBlocksFromText = (text: string): { name: string | null; blocks: { typ
 };
 
 export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
-  const { createNewPrompt, setView, setBlocks: setStoreBlocks, updateCurrentPromptName } = usePromptStore((state) => state.actions);
+  const {
+    createNewPrompt,
+    setView,
+    setBlocks: setStoreBlocks,
+    updateCurrentPromptName,
+  } = usePromptStore((state) => state.actions);
   const currentView = usePromptStore((state) => state.currentView);
   const { apiKey, model, temperature, topP } = useSettingsStore();
 
@@ -142,46 +152,39 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
     setError(null);
 
     createNewPrompt('Generating...');
-    
+
     const promptId = usePromptStore.getState().currentPromptId;
     if (!promptId) return;
 
     setView('editor');
 
     let accumulatedText = '';
-    const existingBlockIds: string[] = []; 
+    const existingBlockIds: string[] = [];
 
     try {
-      await streamPromptGeneration(
-        apiKey,
-        model,
-        temperature,
-        topP,
-        requirements,
-        (chunk) => {
-          accumulatedText += chunk;
-          const { name, blocks: parsedBlocks } = parseBlocksFromText(accumulatedText);
+      await streamPromptGeneration(apiKey, model, temperature, topP, requirements, (chunk) => {
+        accumulatedText += chunk;
+        const { name, blocks: parsedBlocks } = parseBlocksFromText(accumulatedText);
 
-          if (name) {
-            updateCurrentPromptName(name);
-          }
-
-          const newBlocks = parsedBlocks.map((pb, index) => {
-            if (index >= existingBlockIds.length) {
-              existingBlockIds.push(generateId());
-            }
-            return {
-              id: existingBlockIds[index],
-              type: pb.type,
-              content: pb.content,
-              isCollapsed: false
-            };
-          });
-
-          setStoreBlocks(promptId, newBlocks);
+        if (name) {
+          updateCurrentPromptName(name);
         }
-      );
-      
+
+        const newBlocks = parsedBlocks.map((pb, index) => {
+          if (index >= existingBlockIds.length) {
+            existingBlockIds.push(generateId());
+          }
+          return {
+            id: existingBlockIds[index],
+            type: pb.type,
+            content: pb.content,
+            isCollapsed: false,
+          };
+        });
+
+        setStoreBlocks(promptId, newBlocks);
+      });
+
       setRequirements('');
     } catch (err) {
       console.error('Failed to generate prompt with AI:', err);
@@ -210,35 +213,40 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
       icon: Repeat,
       title: 'Paraphrase your text',
     },
-    { view: 'settings', label: 'Settings', icon: Settings, title: 'Configure application settings' },
+    {
+      view: 'settings',
+      label: 'Settings',
+      icon: Settings,
+      title: 'Configure application settings',
+    },
   ];
 
   if (currentView === 'ai-create' || isLoading) {
     return (
       <aside
         style={{ width: `${width}px` }}
-        className="bg-neutral-900 p-4 border-r border-neutral-800 flex flex-col gap-4 overflow-y-auto flex-shrink-0 h-full"
+        className="flex h-full flex-shrink-0 flex-col gap-4 overflow-y-auto border-r border-neutral-800 bg-neutral-900 p-4"
       >
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold text-white tracking-wider flex items-center gap-2">
-            <Wand2 className="w-4 h-4 text-orange-500" />
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="flex items-center gap-2 font-bold tracking-wider text-white">
+            <Wand2 className="h-4 w-4 text-orange-500" />
             AI CREATOR
           </h3>
           <button
             onClick={handleCloseAiMode}
-            className="text-neutral-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-neutral-400 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             title="Close AI Creator"
             disabled={isLoading}
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          <p className="text-sm text-neutral-400 font-sans">
+        <div className="flex flex-1 flex-col gap-4">
+          <p className="font-sans text-sm text-neutral-400">
             Describe the prompt you want to build. The AI will generate the structure for you.
           </p>
-          
+
           <textarea
             value={requirements}
             onChange={(e) => setRequirements(e.target.value)}
@@ -248,14 +256,14 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
                 handleSubmitAi();
               }
             }}
-            className="w-full flex-1 p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono resize-none text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex-1 resize-none rounded-md border border-neutral-700 bg-neutral-800 p-3 font-mono text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="e.g., Create a prompt for a customer support agent handling a refund request..."
             disabled={isLoading}
           />
 
           {error && (
-            <div className="bg-red-900/30 border border-red-500/50 text-red-400 p-3 rounded-md text-xs flex items-start gap-2">
-              <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+            <div className="flex items-start gap-2 rounded-md border border-red-500/50 bg-red-900/30 p-3 text-xs text-red-400">
+              <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -263,16 +271,16 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
           <button
             onClick={handleSubmitAi}
             disabled={isLoading || !requirements.trim()}
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-orange-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? (
               <>
-                <Loader className="w-4 h-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin" />
                 Generating...
               </>
             ) : (
               <>
-                Generate <ArrowRight className="w-4 h-4" />
+                Generate <ArrowRight className="h-4 w-4" />
               </>
             )}
           </button>
@@ -284,22 +292,22 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
   return (
     <aside
       style={{ width: `${width}px` }}
-      className="bg-neutral-900 p-4 border-r border-neutral-800 flex flex-col gap-6 overflow-y-auto flex-shrink-0 h-full"
+      className="flex h-full flex-shrink-0 flex-col gap-6 overflow-y-auto border-r border-neutral-800 bg-neutral-900 p-4"
     >
       <div className="space-y-2">
         <button
           onClick={handleNewPrompt}
-          className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-orange-500 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-orange-600"
           title="Create a new blank prompt"
         >
-          <PlusCircle className="w-4 h-4" /> New Prompt
+          <PlusCircle className="h-4 w-4" /> New Prompt
         </button>
         <button
           onClick={onGenerateWithAi}
-          className="flex items-center justify-center gap-2 w-full px-3 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white"
           title="Create a new prompt using AI"
         >
-          <Wand2 className="w-4 h-4" /> New with AI
+          <Wand2 className="h-4 w-4" /> New with AI
         </button>
       </div>
 
@@ -319,7 +327,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
         </ul>
       </nav>
 
-      <div className="flex-grow flex flex-col gap-6">
+      <div className="flex flex-grow flex-col gap-6">
         {currentView === 'editor' && <BlockLibrary />}
         <ModelConfig />
       </div>

@@ -21,7 +21,7 @@ export const ImageGrid = () => {
 
   return (
     <motion.div
-      className="w-full h-full grid gap-2"
+      className="grid h-full w-full gap-2"
       style={{
         gridTemplateRows,
         gridTemplateColumns,
@@ -35,13 +35,13 @@ export const ImageGrid = () => {
         return (
           <motion.div
             key={index}
-            className="relative w-full h-full overflow-hidden rounded-md bg-neutral-800"
+            className="relative h-full w-full overflow-hidden rounded-md bg-neutral-800"
             onMouseEnter={() => setHovered({ row, col })}
           >
             <img
               src={url}
               alt={`Grid Image ${index + 1}`}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </motion.div>
         );

@@ -30,7 +30,7 @@ export const MainCanvas = () => {
       addBlock(data as BlockType);
     } else if (draggedId) {
       const target = (e.target as HTMLElement).closest('.prompt-block');
-      const targetId = target ? (target as HTMLElement).dataset.blockId ?? null : null;
+      const targetId = target ? ((target as HTMLElement).dataset.blockId ?? null) : null;
       if (draggedId !== targetId) {
         reorderBlocks(draggedId, targetId);
       }
@@ -53,7 +53,7 @@ export const MainCanvas = () => {
         onDrop={handleDrop}
       >
         {currentPrompt.blocks.length === 0 ? (
-          <div className="text-center py-20 border-2 border-dashed border-neutral-700 rounded-lg">
+          <div className="rounded-lg border-2 border-dashed border-neutral-700 py-20 text-center">
             <p className="text-neutral-500">
               DRAG BLOCKS FROM THE LIBRARY TO START BUILDING YOUR PROMPT.
             </p>
@@ -71,18 +71,18 @@ export const MainCanvas = () => {
         )}
       </div>
       <div className="mt-20 text-center">
-        <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span className="text-sm font-medium mr-2 text-neutral-400">ADD BLOCK:</span>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <span className="mr-2 text-sm font-medium text-neutral-400">ADD BLOCK:</span>
           {blockTypes.map((type) => {
             const config = blockConfig[type];
             return (
               <button
                 key={type}
                 onClick={() => addBlock(type)}
-                className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white"
+                className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white"
                 title={`Add a new ${type} block`}
               >
-                <config.icon className="w-4 h-4" />
+                <config.icon className="h-4 w-4" />
                 {type}
               </button>
             );

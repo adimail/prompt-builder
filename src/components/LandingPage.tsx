@@ -24,23 +24,23 @@ const InfoCard = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <div className="bg-neutral-900 p-6 rounded-lg border border-neutral-800 h-full">
-    <div className="flex items-center gap-4 mb-3">
+  <div className="h-full rounded-lg border border-neutral-800 bg-neutral-900 p-6">
+    <div className="mb-3 flex items-center gap-4">
       <div className="text-orange-500">{icon}</div>
       <h3 className="text-xl font-bold tracking-wider text-white">{title}</h3>
     </div>
-    <p className="text-neutral-400 font-sans">{children}</p>
+    <p className="font-sans text-neutral-400">{children}</p>
   </div>
 );
 
 export const LandingPage = () => {
   return (
-    <div className="bg-black text-white font-mono">
-      <header className="sticky top-0 bg-black/80 backdrop-blur-sm border-b border-neutral-800 z-50">
-        <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
+    <div className="bg-black font-mono text-white">
+      <header className="sticky top-0 z-50 border-b border-neutral-800 bg-black/80 backdrop-blur-sm">
+        <nav className="container mx-auto flex items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <Rocket className="text-orange-500 w-7 h-7" />
-            <h1 className="md:text-xl text-sm font-bold tracking-wider">PROMPT BUILDER</h1>
+            <Rocket className="h-7 w-7 text-orange-500" />
+            <h1 className="text-sm font-bold tracking-wider md:text-xl">PROMPT BUILDER</h1>
           </div>
           <div className="flex items-center gap-4">
             <a
@@ -50,11 +50,11 @@ export const LandingPage = () => {
               className="text-neutral-400 hover:text-white"
               title="View on GitHub"
             >
-              <Github className="w-6 h-6" />
+              <Github className="h-6 w-6" />
             </a>
             <a
               href="studio.html?view=editor"
-              className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 font-bold md:text-sm text-xs"
+              className="rounded-md bg-orange-500 px-4 py-2 text-xs font-bold text-white hover:bg-orange-600 md:text-sm"
             >
               LAUNCH APP
             </a>
@@ -65,41 +65,40 @@ export const LandingPage = () => {
       <main>
         <HeroSection />
 
-        <section id="why-prompts" className="py-20 bg-black">
-          <div className="container mx-auto px-6 text-center max-w-4xl">
-            <BrainCircuit className="w-16 h-16 mx-auto text-orange-500 mb-4" />
-            <h2 className="text-3xl md:text-4xl font-bold tracking-wider">
+        <section id="why-prompts" className="bg-black py-20">
+          <div className="container mx-auto max-w-4xl px-6 text-center">
+            <BrainCircuit className="mx-auto mb-4 h-16 w-16 text-orange-500" />
+            <h2 className="text-3xl font-bold tracking-wider md:text-4xl">
               Better Prompts, Better Results
             </h2>
-            <p className="text-lg text-neutral-400 mt-4 font-sans">
+            <p className="mt-4 font-sans text-lg text-neutral-400">
               The output from a Large Language Model is a direct reflection of the prompt it
               receives. Vague instructions lead to generic responses. A well-crafted, specific, and
               context-rich prompt unlocks precise, creative, and powerful results.
             </p>
-            <p className="text-lg text-neutral-300 mt-4 font-sans font-semibold">
+            <p className="mt-4 font-sans text-lg font-semibold text-neutral-300">
               Use Prompt Builder to craft those high-quality prompts and gain full control over the
               AI's output.
             </p>
           </div>
         </section>
 
-        <section id="use-cases" className="py-20 bg-neutral-950 border-y border-neutral-800">
+        <section id="use-cases" className="border-y border-neutral-800 bg-neutral-950 py-20">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
+            <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-wider">How You'll Use It</h2>
-              <p className="text-lg text-neutral-400 mt-2 font-sans">
+              <p className="mt-2 font-sans text-lg text-neutral-400">
                 From rapid prototyping to building production-ready AI interactions.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               <InfoCard icon={<Lightbulb />} title="Iterative Development">
-                When you're fine-tuning a prompt, our modular editor lets you easily tweak,
-                reorder, and test different components to see what works best without losing your
-                flow.
+                When you're fine-tuning a prompt, our modular editor lets you easily tweak, reorder,
+                and test different components to see what works best without losing your flow.
               </InfoCard>
               <InfoCard icon={<Code />} title="Structured Data Generation">
-                When you need an LLM to return data in a specific, machine-readable format like
-                JSON for your application, our AI-powered JSON Builder is the perfect tool.
+                When you need an LLM to return data in a specific, machine-readable format like JSON
+                for your application, our AI-powered JSON Builder is the perfect tool.
               </InfoCard>
               <InfoCard icon={<Database />} title="Complex Task Automation">
                 When a task requires multiple steps, constraints, or background context, build a
@@ -109,28 +108,28 @@ export const LandingPage = () => {
           </div>
         </section>
 
-        <section className="py-20 bg-black">
-          <div className="container mx-auto px-6 text-center max-w-3xl">
-            <Quote className="w-12 h-12 mx-auto text-neutral-700 mb-4" />
-            <blockquote className="text-2xl md:text-3xl italic text-neutral-300 font-sans leading-relaxed">
+        <section className="bg-black py-20">
+          <div className="container mx-auto max-w-3xl px-6 text-center">
+            <Quote className="mx-auto mb-4 h-12 w-12 text-neutral-700" />
+            <blockquote className="font-sans text-2xl italic leading-relaxed text-neutral-300 md:text-3xl">
               "The difference between a good and a great AI response isn't the model—it's the
               prompt. Master the art of the prompt, and you master the AI."
             </blockquote>
           </div>
         </section>
 
-        <section id="features" className="bg-neutral-950 py-20 border-y border-neutral-800">
+        <section id="features" className="border-y border-neutral-800 bg-neutral-950 py-20">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
+            <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-wider">CORE FEATURES</h2>
-              <p className="text-lg text-neutral-400 mt-2 font-sans">
+              <p className="mt-2 font-sans text-lg text-neutral-400">
                 Everything you need for efficient prompt engineering.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               <InfoCard icon={<LayoutGrid />} title="MODULAR EDITOR">
-                Drag, drop, and reorder blocks like Instructions, Context, and Variables to
-                visually construct complex prompts.
+                Drag, drop, and reorder blocks like Instructions, Context, and Variables to visually
+                construct complex prompts.
               </InfoCard>
               <InfoCard icon={<FileText />} title="TEMPLATE MANAGEMENT">
                 Save your prompts as templates. Load, edit, and delete them easily, streamlining
@@ -179,7 +178,7 @@ export const LandingPage = () => {
             </a>
             .
           </p>
-          <p className="text-sm mt-4">
+          <p className="mt-4 text-sm">
             © {new Date().getFullYear()} PROMPT BUILDER. BUILT FOR THE COMMUNITY.
           </p>
         </div>

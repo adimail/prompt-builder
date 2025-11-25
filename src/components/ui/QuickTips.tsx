@@ -30,24 +30,24 @@ const TipCard = ({
   description: string;
   example: string;
 }) => (
-  <div className="bg-neutral-900 border cursor-pointer border-neutral-800 rounded-lg p-6 space-y-4 h-full flex flex-col hover:border-orange-500/50 transition-colors">
+  <div className="flex h-full cursor-pointer flex-col space-y-4 rounded-lg border border-neutral-800 bg-neutral-900 p-6 transition-colors hover:border-orange-500/50">
     <div>
-      <h3 className="font-bold text-white tracking-wider">{title}</h3>
-      <p className="text-sm text-neutral-400 font-sans mt-2">{description}</p>
+      <h3 className="font-bold tracking-wider text-white">{title}</h3>
+      <p className="mt-2 font-sans text-sm text-neutral-400">{description}</p>
     </div>
-    <div className="flex-grow flex items-end">
-      <p className="text-2xl text-orange-500 font-sans">{example}</p>
+    <div className="flex flex-grow items-end">
+      <p className="font-sans text-2xl text-orange-500">{example}</p>
     </div>
   </div>
 );
 
 export const QuickTips = () => {
   return (
-    <div className="w-full max-w-7xl mx-auto my-20 px-6">
-      <h2 className="text-2xl font-bold text-white tracking-wider mb-6">
+    <div className="mx-auto my-20 w-full max-w-7xl px-6">
+      <h2 className="mb-6 text-2xl font-bold tracking-wider text-white">
         QUICK TIPS FOR BETTER PROMPTS
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {tips.map((tip) => (
           <TipCard key={tip.title} {...tip} />
         ))}

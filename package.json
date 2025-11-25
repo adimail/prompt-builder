@@ -8,7 +8,9 @@
     "dev": "webpack serve --mode development --open",
     "build": "webpack --mode production",
     "build:gh-pages": "GITHUB_PAGES=true webpack --mode production",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"./src/**/*.{ts,tsx,js,jsx,json,css,html}\"",
+    "check-format": "prettier --check \"./src/**/*.{ts,tsx,js,jsx,json,css,html}\""
   },
   "keywords": [
     "prompt-engineering",
@@ -30,6 +32,8 @@
     "html-webpack-plugin": "^5.6.3",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.1.1",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "style-loader": "^4.0.0",
     "swc-loader": "^0.2.6",
     "tailwindcss": "^3.4.17",

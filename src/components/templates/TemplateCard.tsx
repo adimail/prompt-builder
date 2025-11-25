@@ -31,29 +31,29 @@ export const TemplateCard = ({ prompt }: TemplateCardProps) => {
   };
 
   return (
-    <div className="bg-neutral-900 p-4 rounded-lg border border-neutral-800 flex items-center justify-between gap-4 hover:border-orange-500/50 transition-colors">
-      <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-lg truncate text-white tracking-wider" title={prompt.name}>
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-neutral-900 p-4 transition-colors hover:border-orange-500/50">
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-lg font-bold tracking-wider text-white" title={prompt.name}>
           {prompt.name}
         </h3>
-        <p className="text-sm text-neutral-400 font-sans">
+        <p className="font-sans text-sm text-neutral-400">
           Last updated: {date} • {stats}
         </p>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex flex-shrink-0 items-center gap-2">
         <button
           onClick={handleLoad}
-          className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm font-bold"
+          className="flex items-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600"
           title="Load this prompt in the editor"
         >
-          <Edit className="w-4 h-4" /> Load
+          <Edit className="h-4 w-4" /> Load
         </button>
         <button
           onClick={handleDelete}
-          className="w-9 h-9 rounded-md flex items-center justify-center text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
+          className="flex h-9 w-9 items-center justify-center rounded-md text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
           title="Delete this prompt"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="h-4 w-4" />
         </button>
       </div>
     </div>

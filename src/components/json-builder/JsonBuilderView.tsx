@@ -23,7 +23,7 @@ const RadioButton = ({
 }) => (
   <label
     htmlFor={id}
-    className="flex items-center gap-2 p-3 rounded-md bg-neutral-800 border border-neutral-700 cursor-pointer hover:bg-neutral-700 has-[:checked]:bg-orange-900/50 has-[:checked]:border-orange-500 transition-colors"
+    className="flex cursor-pointer items-center gap-2 rounded-md border border-neutral-700 bg-neutral-800 p-3 transition-colors hover:bg-neutral-700 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-900/50"
   >
     <input
       type="radio"
@@ -32,7 +32,7 @@ const RadioButton = ({
       value={value}
       checked={checked}
       onChange={onChange}
-      className="w-4 h-4 accent-orange-500"
+      className="h-4 w-4 accent-orange-500"
     />
     <span className="font-medium">{label}</span>
   </label>
@@ -49,16 +49,16 @@ const getPlaceholderText = (builderType: JsonBuilderType): string => {
   switch (builderType) {
     case 'Video':
       return 'e.g., "Ocean waves crashing on rocky shore, slow motion, cinematic style"';
-    
+
     case 'Image':
       return 'e.g., "Abstract geometric shapes in vibrant colors, modern art style"';
-    
+
     case 'UI':
       return 'e.g., "Login form with email field, password input, and submit button"';
-    
+
     case 'Custom':
       return 'e.g., "Customer order with items, shipping address, and payment method"';
-    
+
     default:
       return 'e.g., "Describe your data structure and desired JSON format"';
   }
@@ -138,10 +138,18 @@ export const JsonBuilderView = () => {
     let fullResponse = '';
 
     try {
-      await streamJsonForBuilder(apiKey, model, temperature, topP, builderType, description, (chunk) => {
-        fullResponse += chunk;
-        setGeneratedJson(fullResponse);
-      });
+      await streamJsonForBuilder(
+        apiKey,
+        model,
+        temperature,
+        topP,
+        builderType,
+        description,
+        (chunk) => {
+          fullResponse += chunk;
+          setGeneratedJson(fullResponse);
+        }
+      );
 
       const cleanedString = cleanJsonString(fullResponse);
       try {
@@ -189,16 +197,18 @@ export const JsonBuilderView = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-screen">
-      <div className="flex-1 flex flex-col p-6 lg:p-8 lg:border-r border-neutral-800 min-h-0">
-        <h2 className="text-3xl font-bold tracking-wider mb-5 flex-shrink-0">JSON Prompt Builder</h2>
+    <div className="flex h-screen flex-1 flex-col overflow-hidden lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col border-neutral-800 p-6 lg:border-r lg:p-8">
+        <h2 className="mb-5 flex-shrink-0 text-3xl font-bold tracking-wider">
+          JSON Prompt Builder
+        </h2>
 
-        <div className="flex flex-col flex-1 min-h-0">
-          <div className="flex-shrink-0 mb-6">
-            <label className="text-sm font-medium text-neutral-300 mb-2 block">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="mb-6 flex-shrink-0">
+            <label className="mb-2 block text-sm font-medium text-neutral-300">
               1. CHOOSE A BUILDER TYPE
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {builderOptions.map(({ id, label }) => (
                 <RadioButton
                   key={id}
@@ -213,10 +223,10 @@ export const JsonBuilderView = () => {
             </div>
           </div>
 
-          <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex min-h-0 flex-1 flex-col">
             <label
               htmlFor="description-input"
-              className="text-sm font-medium text-neutral-300 mb-2 block flex-shrink-0"
+              className="mb-2 block flex-shrink-0 text-sm font-medium text-neutral-300"
             >
               2. DESCRIBE WHAT YOU WANT TO BUILD
             </label>
@@ -224,15 +234,15 @@ export const JsonBuilderView = () => {
               id="description-input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 rounded-md bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono flex-1 resize-none"
+              className="w-full flex-1 resize-none rounded-md border border-neutral-700 bg-neutral-900 p-3 font-mono text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
               placeholder={getPlaceholderText(builderType)}
               disabled={isLoading}
             />
           </div>
 
           {error && (
-            <div className="bg-red-900/30 overflow-hidden border border-red-500/50 text-red-400 p-3 rounded-md text-sm flex items-start gap-2 mt-4 flex-shrink-0">
-              <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <div className="mt-4 flex flex-shrink-0 items-start gap-2 overflow-hidden rounded-md border border-red-500/50 bg-red-900/30 p-3 text-sm text-red-400">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -241,16 +251,16 @@ export const JsonBuilderView = () => {
             <button
               onClick={handleGenerate}
               disabled={isLoading || !description.trim()}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center gap-2 rounded-md bg-orange-500 px-6 py-3 text-base font-bold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>
-                  <Loader className="w-5 h-5 animate-spin" />
+                  <Loader className="h-5 w-5 animate-spin" />
                   GENERATING...
                 </>
               ) : (
                 <>
-                  <Wand2 className="w-5 h-5" />
+                  <Wand2 className="h-5 w-5" />
                   BUILD JSON
                 </>
               )}
@@ -259,58 +269,58 @@ export const JsonBuilderView = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 lg:p-8 bg-neutral-950 min-h-0">
-        <div className="flex justify-between items-center mb-4 flex-shrink-0">
+      <div className="flex min-h-0 flex-1 flex-col bg-neutral-950 p-6 lg:p-8">
+        <div className="mb-4 flex flex-shrink-0 items-center justify-between">
           <h3 className="font-bold tracking-wider text-neutral-300">GENERATED JSON</h3>
           <div className="flex items-center gap-2">
             <button
               onClick={handleSave}
               disabled={!generatedJson || isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               title="Save JSON as a prompt"
             >
-              <Save className="w-4 h-4" /> Save
+              <Save className="h-4 w-4" /> Save
             </button>
             <button
               onClick={handleCopy}
               disabled={!generatedJson || isLoading || isCopied}
-              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               title="Copy JSON"
             >
               {isCopied ? (
                 <>
-                  <Check className="w-4 h-4 text-green-500" /> Copied
+                  <Check className="h-4 w-4 text-green-500" /> Copied
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4" /> Copy
+                  <Copy className="h-4 w-4" /> Copy
                 </>
               )}
             </button>
             <button
               onClick={handleDownload}
               disabled={!generatedJson || isLoading}
-              className="flex items-center gap-2 px-3 py-1.5 border border-neutral-700 text-neutral-300 rounded-md text-sm hover:bg-neutral-800 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               title="Download JSON file"
             >
-              <Download className="w-4 h-4" /> Download
+              <Download className="h-4 w-4" /> Download
             </button>
           </div>
         </div>
-        <div className="flex-1 bg-black rounded-md border border-neutral-800 overflow-auto flex flex-col min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col overflow-auto rounded-md border border-neutral-800 bg-black">
           {generatedJson || isLoading ? (
             <textarea
               ref={previewRef}
               value={generatedJson}
               onChange={(e) => setGeneratedJson(e.target.value)}
               readOnly={isLoading}
-              className="w-full h-full flex-1 bg-transparent p-4 text-sm text-neutral-300 font-mono whitespace-pre-wrap focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+              className="h-full w-full flex-1 resize-none whitespace-pre-wrap bg-transparent p-4 font-mono text-sm text-neutral-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center text-neutral-600 p-4">
-              <FileJson className="w-16 h-16 mb-4" />
+            <div className="flex h-full flex-col items-center justify-center p-4 text-center text-neutral-600">
+              <FileJson className="mb-4 h-16 w-16" />
               <p>Your generated JSON will appear here.</p>
-              <p className="text-sm font-sans">Fill out the form and click "Build JSON".</p>
+              <p className="font-sans text-sm">Fill out the form and click "Build JSON".</p>
             </div>
           )}
         </div>

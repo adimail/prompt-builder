@@ -96,7 +96,7 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
 
   return (
     <div
-      className={`prompt-block bg-neutral-900 p-3 rounded-lg border border-neutral-800 transition-opacity ${
+      className={`prompt-block rounded-lg border border-neutral-800 bg-neutral-900 p-3 transition-opacity ${
         isDragging ? 'opacity-30' : 'opacity-100'
       }`}
       data-block-id={block.id}
@@ -104,56 +104,52 @@ export const PromptBlock = ({ block, isDragging, onDragStart, onDragEnd }: Promp
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <GripVertical className="cursor-grab text-neutral-600 hover:text-neutral-400" />
-          <config.icon className={`w-5 h-5 ${config.colorClass}`} />
+          <config.icon className={`h-5 w-5 ${config.colorClass}`} />
           <h3 className="font-semibold tracking-wider text-white">{config.name.toUpperCase()}</h3>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={handleImprove}
             disabled={isImproving}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed"
             title="Improve with AI"
           >
             {isImproving ? (
-              <Loader className="w-4 h-4 animate-spin" />
+              <Loader className="h-4 w-4 animate-spin" />
             ) : (
-              <Wand2 className="w-4 h-4" />
+              <Wand2 className="h-4 w-4" />
             )}
           </button>
           <button
             onClick={() => toggleBlockCollapse(block.id)}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-800 hover:text-white"
             title="Collapse/Expand Block"
           >
-            {isCollapsed ? (
-              <ChevronDown className="w-4 h-4" />
-            ) : (
-              <ChevronUp className="w-4 h-4" />
-            )}
+            {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
           </button>
           <button
             onClick={() => duplicateBlock(block.id)}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-neutral-800 hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-neutral-800 hover:text-white"
             title="Duplicate Block"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="h-4 w-4" />
           </button>
           <button
             onClick={() => deleteBlock(block.id)}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-red-500/20 hover:text-red-500"
             title="Delete Block"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>
       <div className={`block-content pl-10 ${isCollapsed ? 'hidden' : ''}`}>
         <textarea
           ref={textareaRef}
-          className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono"
+          className="w-full rounded-md border border-neutral-700 bg-neutral-800 p-3 font-mono text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
           rows={4}
           placeholder={`Enter ${block.type.toLowerCase()} content here...`}
           value={localContent}

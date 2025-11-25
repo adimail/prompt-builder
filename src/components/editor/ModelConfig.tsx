@@ -7,13 +7,13 @@ export const ModelConfig = () => {
 
   return (
     <div>
-      <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2 border-t border-neutral-800 pt-6">
+      <h2 className="mb-3 border-t border-neutral-800 px-2 pt-6 text-sm font-medium uppercase tracking-wider text-neutral-400">
         Model Configuration
       </h2>
 
       <ModelRadarChart temperature={temperature} topP={topP} />
 
-      <div className="space-y-4 px-2 mt-4">
+      <div className="mt-4 space-y-4 px-2">
         <SimpleSlider
           id="temperature"
           label="Temperature"

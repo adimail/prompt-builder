@@ -66,7 +66,11 @@ export const usePromptStore = create<AppState>()(
           set((state) => {
             const newPrompts = state.prompts.map((p) =>
               p.id === state.currentPromptId
-                ? { ...p, name: name.trim() || 'Untitled Prompt', updatedAt: new Date().toISOString() }
+                ? {
+                    ...p,
+                    name: name.trim() || 'Untitled Prompt',
+                    updatedAt: new Date().toISOString(),
+                  }
                 : p
             );
             return { prompts: newPrompts };
@@ -86,9 +90,7 @@ export const usePromptStore = create<AppState>()(
                     typeof promptToAdd.content === 'string' ? promptToAdd.content : '{}';
                 } else {
                   promptToAdd.format = 'blocks';
-                  promptToAdd.blocks = Array.isArray(promptToAdd.blocks)
-                    ? promptToAdd.blocks
-                    : [];
+                  promptToAdd.blocks = Array.isArray(promptToAdd.blocks) ? promptToAdd.blocks : [];
                   promptToAdd.content = '';
                 }
                 newPrompts.push(promptToAdd as Prompt);
@@ -211,9 +213,7 @@ export const usePromptStore = create<AppState>()(
         setBlocks: (promptId: string, blocks: Block[]) =>
           set((state) => ({
             prompts: state.prompts.map((p) =>
-              p.id === promptId
-                ? { ...p, blocks, updatedAt: new Date().toISOString() }
-                : p
+              p.id === promptId ? { ...p, blocks, updatedAt: new Date().toISOString() } : p
             ),
           })),
       },

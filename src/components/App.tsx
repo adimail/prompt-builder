@@ -16,14 +16,15 @@ import { AppView } from '../types';
 import { Sparkles } from 'lucide-react';
 
 const AiCreationPlaceholder = () => (
-  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6 overflow-y-auto bg-black/50">
-    <div className="p-6 bg-neutral-900/50 rounded-full border border-neutral-800">
-      <Sparkles className="w-16 h-16 text-orange-500 animate-pulse" />
+  <div className="flex flex-1 flex-col items-center justify-center space-y-6 overflow-y-auto bg-black/50 p-8 text-center">
+    <div className="rounded-full border border-neutral-800 bg-neutral-900/50 p-6">
+      <Sparkles className="h-16 w-16 animate-pulse text-orange-500" />
     </div>
     <div>
       <h2 className="text-3xl font-bold tracking-wider text-white">AI PROMPT CREATOR</h2>
-      <p className="mt-4 text-lg text-neutral-400 font-sans max-w-md mx-auto">
-        Use the sidebar to describe what you need. The AI will construct a structured prompt for you automatically.
+      <p className="mx-auto mt-4 max-w-md font-sans text-lg text-neutral-400">
+        Use the sidebar to describe what you need. The AI will construct a structured prompt for you
+        automatically.
       </p>
     </div>
   </div>
@@ -106,27 +107,24 @@ export const App = () => {
   const showMobileControls = currentView === 'editor' && !!currentPromptId;
 
   return (
-    <div className="bg-black text-white flex flex-col h-screen overflow-hidden font-mono text-base">
+    <div className="flex h-screen flex-col overflow-hidden bg-black font-mono text-base text-white">
       <Header
         onGenerateWithAi={() => setView('ai-create')}
         onOpenModelSelection={() => setIsModelModalOpen(true)}
       />
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="relative flex flex-1 overflow-hidden">
         <div className="hidden md:flex">
-          <LeftSidebar
-            width={leftSidebarWidth}
-            onGenerateWithAi={() => setView('ai-create')}
-          />
+          <LeftSidebar width={leftSidebarWidth} onGenerateWithAi={() => setView('ai-create')} />
           <div
             onMouseDown={handleMouseDown}
-            className="w-1 cursor-col-resize bg-neutral-800 hover:bg-orange-500/50 transition-colors"
+            className="w-1 cursor-col-resize bg-neutral-800 transition-colors hover:bg-orange-500/50"
             title="Resize sidebar"
           />
         </div>
 
         <div
           className={cn(
-            'md:hidden fixed inset-y-0 left-0 z-40 w-80 bg-neutral-900 transform transition-transform duration-300 ease-in-out',
+            'fixed inset-y-0 left-0 z-40 w-80 transform bg-neutral-900 transition-transform duration-300 ease-in-out md:hidden',
             isLeftSidebarOpen ? 'translate-x-0' : '-translate-x-[500px]'
           )}
         >
@@ -136,11 +134,11 @@ export const App = () => {
         {isLeftSidebarOpen && (
           <div
             onClick={() => uiActions.closeSidebars()}
-            className="md:hidden fixed inset-0 bg-black/60 z-30"
+            className="fixed inset-0 z-30 bg-black/60 md:hidden"
           ></div>
         )}
 
-        <main className="flex-1 flex flex-col overflow-hidden">{renderMainView()}</main>
+        <main className="flex flex-1 flex-col overflow-hidden">{renderMainView()}</main>
       </div>
 
       {showMobileControls && (

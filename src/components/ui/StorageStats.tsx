@@ -37,21 +37,21 @@ export const StorageStats = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-[333px] mt-20">
-      <h2 className="text-sm font-medium text-neutral-400 uppercase tracking-wider mb-3 px-2">
+    <div className="mx-auto mt-20 max-w-[333px]">
+      <h2 className="mb-3 px-2 text-sm font-medium uppercase tracking-wider text-neutral-400">
         Stats
       </h2>
-      <div className="space-y-2 text-sm text-neutral-300 px-2">
+      <div className="space-y-2 px-2 text-sm text-neutral-300">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-neutral-400">
-            <FileText className="w-4 h-4" />
+            <FileText className="h-4 w-4" />
             <span>Total Prompts</span>
           </div>
           <span className="font-semibold text-white">{promptCount}</span>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-neutral-400">
-            <HardDrive className="w-4 h-4" />
+            <HardDrive className="h-4 w-4" />
             <span>Storage Used</span>
           </div>
           <span className="font-semibold text-white">{formatBytes(storageSize)}</span>

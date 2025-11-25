@@ -42,7 +42,13 @@ export interface Prompt {
   content: string;
 }
 
-export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder' | 'paraphrase' | 'ai-create';
+export type AppView =
+  | 'editor'
+  | 'templates'
+  | 'settings'
+  | 'json-builder'
+  | 'paraphrase'
+  | 'ai-create';
 
 export interface PersistedState {
   currentView: AppView;
