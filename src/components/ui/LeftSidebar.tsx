@@ -70,7 +70,6 @@ const parseBlocksFromText = (text: string): { name: string | null; blocks: { typ
   const blocks: { type: BlockType; content: string }[] = [];
   let name: string | null = null;
   
-  
   const regex = /(?:^|\n)===\s*\n?~~\s*([a-zA-Z]+)\s*\n?===\s*\n?/g;
   
   let match;
@@ -78,24 +77,20 @@ const parseBlocksFromText = (text: string): { name: string | null; blocks: { typ
   let currentType: string | null = null;
 
   while ((match = regex.exec(text)) !== null) {
-    
     if (currentType) {
       const content = text.substring(lastIndex, match.index).trim();
       if (currentType === 'NAME') {
         name = content;
       } else {
-        
         const type = blockTypes.includes(currentType as any) ? (currentType as BlockType) : 'Instruction';
         blocks.push({ type, content });
       }
     }
 
-    
     currentType = match[1];
     lastIndex = regex.lastIndex;
   }
 
-  
   if (currentType) {
     const content = text.substring(lastIndex).trim();
     if (currentType === 'NAME') {
@@ -126,6 +121,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
   };
 
   const handleCloseAiMode = () => {
+    if (isLoading) return;
     setRequirements('');
     setError(null);
     setView('editor');
@@ -145,17 +141,13 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
     setIsLoading(true);
     setError(null);
 
-    
     createNewPrompt('Generating...');
-    
     
     const promptId = usePromptStore.getState().currentPromptId;
     if (!promptId) return;
 
-    
     setView('editor');
 
-    
     let accumulatedText = '';
     const existingBlockIds: string[] = []; 
 
@@ -170,7 +162,6 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
           accumulatedText += chunk;
           const { name, blocks: parsedBlocks } = parseBlocksFromText(accumulatedText);
 
-          
           if (name) {
             updateCurrentPromptName(name);
           }
@@ -222,7 +213,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
     { view: 'settings', label: 'Settings', icon: Settings, title: 'Configure application settings' },
   ];
 
-  if (currentView === 'ai-create') {
+  if (currentView === 'ai-create' || isLoading) {
     return (
       <aside
         style={{ width: `${width}px` }}
@@ -235,8 +226,9 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
           </h3>
           <button
             onClick={handleCloseAiMode}
-            className="text-neutral-400 hover:text-white transition-colors"
+            className="text-neutral-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Close AI Creator"
+            disabled={isLoading}
           >
             <X className="w-5 h-5" />
           </button>
@@ -256,7 +248,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
                 handleSubmitAi();
               }
             }}
-            className="w-full flex-1 p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono resize-none text-sm"
+            className="w-full flex-1 p-3 rounded-md bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono resize-none text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="e.g., Create a prompt for a customer support agent handling a refund request..."
             disabled={isLoading}
           />
