@@ -42,7 +42,7 @@ export interface Prompt {
   content: string;
 }
 
-export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder' | 'paraphrase';
+export type AppView = 'editor' | 'templates' | 'settings' | 'json-builder' | 'paraphrase' | 'ai-create';
 
 export interface PersistedState {
   currentView: AppView;
@@ -71,4 +71,5 @@ export interface AppActions {
   updatePromptContent: (content: string) => void;
   reorderBlocks: (draggedId: string, targetId: string | null) => void;
   toggleBlockCollapse: (blockId: string) => void;
+  setBlocks: (promptId: string, blocks: Block[]) => void;
 }

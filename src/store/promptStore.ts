@@ -208,6 +208,14 @@ export const usePromptStore = create<AppState>()(
                 : p
             ),
           })),
+        setBlocks: (promptId: string, blocks: Block[]) =>
+          set((state) => ({
+            prompts: state.prompts.map((p) =>
+              p.id === promptId
+                ? { ...p, blocks, updatedAt: new Date().toISOString() }
+                : p
+            ),
+          })),
       },
     }),
     {

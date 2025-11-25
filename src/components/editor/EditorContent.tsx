@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { usePromptStore } from '../../store/promptStore';
 import { useUiStore } from '../../store/uiStore';
 import { debounce } from '../../utils';
@@ -42,6 +42,14 @@ export const EditorContent = () => {
   const { updateCurrentPromptName } = usePromptStore((state) => state.actions);
   const { isRightSidebarOpen, actions: uiActions } = useUiStore();
 
+  const [localName, setLocalName] = useState(currentPrompt?.name || '');
+
+  useEffect(() => {
+    if (currentPrompt) {
+      setLocalName(currentPrompt.name);
+    }
+  }, [currentPrompt?.name]);
+
   const debouncedUpdateName = useCallback(debounce(updateCurrentPromptName, 300), [
     updateCurrentPromptName,
   ]);
@@ -82,8 +90,11 @@ export const EditorContent = () => {
             key={currentPrompt.id}
             type="text"
             className="text-2xl font-bold bg-transparent rounded-md -ml-2 px-2 py-1 w-full focus:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-orange-500 tracking-wider"
-            defaultValue={currentPrompt.name}
-            onChange={(e) => debouncedUpdateName(e.target.value)}
+            value={localName}
+            onChange={(e) => {
+              setLocalName(e.target.value);
+              debouncedUpdateName(e.target.value);
+            }}
             title="Click to rename prompt"
           />
           {isBlockEditor && (
