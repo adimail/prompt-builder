@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AppState, Prompt, Block, BlockType, PromptFormat } from '../types';
+import { AppState, Prompt, Block, BlockType, PromptFormat, AiGenerationState } from '../types';
 import { generateId } from '../utils';
 
 const createNewPromptObject = (name: string = 'Untitled Prompt'): Prompt => ({
@@ -13,12 +13,22 @@ const createNewPromptObject = (name: string = 'Untitled Prompt'): Prompt => ({
   content: '',
 });
 
+const initialAiState: AiGenerationState = {
+  isGenerating: false,
+  isFinished: false,
+  rawContent: '',
+  thoughts: '',
+  generatedBlocks: [],
+  generatedName: null,
+};
+
 export const usePromptStore = create<AppState>()(
   persist(
     (set, get) => ({
       currentView: 'editor',
       prompts: [],
       currentPromptId: null,
+      aiState: initialAiState,
       actions: {
         setView: (view) => {
           set({ currentView: view });
@@ -216,6 +226,47 @@ export const usePromptStore = create<AppState>()(
               p.id === promptId ? { ...p, blocks, updatedAt: new Date().toISOString() } : p
             ),
           })),
+        startAiGeneration: () =>
+          set({
+            aiState: {
+              ...initialAiState,
+              isGenerating: true,
+            },
+          }),
+        updateAiGeneration: (content, blocks, name, thoughts = '') =>
+          set((state) => ({
+            aiState: {
+              ...state.aiState,
+              rawContent: content,
+              generatedBlocks: blocks,
+              generatedName: name,
+              thoughts: thoughts || state.aiState.thoughts,
+            },
+          })),
+        finishAiGeneration: () =>
+          set((state) => ({
+            aiState: {
+              ...state.aiState,
+              isGenerating: false,
+              isFinished: true,
+            },
+          })),
+        resetAiGeneration: () =>
+          set({
+            aiState: initialAiState,
+          }),
+        confirmAiGeneration: () => {
+          const { generatedBlocks, generatedName } = get().aiState;
+          const newPrompt = createNewPromptObject(generatedName || 'AI Generated Prompt');
+          newPrompt.blocks = generatedBlocks;
+
+          set((state) => ({
+            prompts: [newPrompt, ...state.prompts],
+            currentPromptId: newPrompt.id,
+            aiState: initialAiState,
+            currentView: 'editor',
+          }));
+        },
       },
     }),
     {

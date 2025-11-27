@@ -113,14 +113,16 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
   const {
     createNewPrompt,
     setView,
-    setBlocks: setStoreBlocks,
-    updateCurrentPromptName,
+    startAiGeneration,
+    updateAiGeneration,
+    finishAiGeneration,
+    resetAiGeneration,
   } = usePromptStore((state) => state.actions);
   const currentView = usePromptStore((state) => state.currentView);
+  const aiState = usePromptStore((state) => state.aiState);
   const { apiKey, model, temperature, topP } = useSettingsStore();
 
   const [requirements, setRequirements] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleNewPrompt = () => {
@@ -131,9 +133,10 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
   };
 
   const handleCloseAiMode = () => {
-    if (isLoading) return;
+    if (aiState.isGenerating) return;
     setRequirements('');
     setError(null);
+    resetAiGeneration();
     setView('editor');
   };
 
@@ -148,44 +151,43 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
       return;
     }
 
-    setIsLoading(true);
     setError(null);
-
-    createNewPrompt('Generating...');
-
-    const promptId = usePromptStore.getState().currentPromptId;
-    if (!promptId) return;
-
-    setView('editor');
+    startAiGeneration();
 
     let accumulatedText = '';
+    let accumulatedThoughts = '';
     const existingBlockIds: string[] = [];
 
     try {
-      await streamPromptGeneration(apiKey, model, temperature, topP, requirements, (chunk) => {
-        accumulatedText += chunk;
-        const { name, blocks: parsedBlocks } = parseBlocksFromText(accumulatedText);
+      await streamPromptGeneration(
+        apiKey,
+        model,
+        temperature,
+        topP,
+        requirements,
+        (chunk, thoughtChunk) => {
+          accumulatedText += chunk;
+          accumulatedThoughts += thoughtChunk;
 
-        if (name) {
-          updateCurrentPromptName(name);
+          const { name, blocks: parsedBlocks } = parseBlocksFromText(accumulatedText);
+
+          const newBlocks = parsedBlocks.map((pb, index) => {
+            if (index >= existingBlockIds.length) {
+              existingBlockIds.push(generateId());
+            }
+            return {
+              id: existingBlockIds[index],
+              type: pb.type,
+              content: pb.content,
+              isCollapsed: false,
+            };
+          });
+
+          updateAiGeneration(accumulatedText, newBlocks, name, accumulatedThoughts);
         }
+      );
 
-        const newBlocks = parsedBlocks.map((pb, index) => {
-          if (index >= existingBlockIds.length) {
-            existingBlockIds.push(generateId());
-          }
-          return {
-            id: existingBlockIds[index],
-            type: pb.type,
-            content: pb.content,
-            isCollapsed: false,
-          };
-        });
-
-        setStoreBlocks(promptId, newBlocks);
-      });
-
-      setRequirements('');
+      finishAiGeneration();
     } catch (err) {
       console.error('Failed to generate prompt with AI:', err);
       let errorMessage = 'An unexpected error occurred. Please check the console for details.';
@@ -193,8 +195,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
         errorMessage = err.message;
       }
       alert(`Generation failed: ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
+      finishAiGeneration();
     }
   };
 
@@ -221,7 +222,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
     },
   ];
 
-  if (currentView === 'ai-create' || isLoading) {
+  if (currentView === 'ai-create') {
     return (
       <aside
         style={{ width: `${width}px` }}
@@ -236,7 +237,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
             onClick={handleCloseAiMode}
             className="text-neutral-400 transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             title="Close AI Creator"
-            disabled={isLoading}
+            disabled={aiState.isGenerating}
           >
             <X className="h-5 w-5" />
           </button>
@@ -258,7 +259,7 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
             }}
             className="w-full flex-1 resize-none rounded-md border border-neutral-700 bg-neutral-800 p-3 font-mono text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="e.g., Create a prompt for a customer support agent handling a refund request..."
-            disabled={isLoading}
+            disabled={aiState.isGenerating}
           />
 
           {error && (
@@ -270,10 +271,10 @@ export const LeftSidebar = ({ width, onGenerateWithAi }: LeftSidebarProps) => {
 
           <button
             onClick={handleSubmitAi}
-            disabled={isLoading || !requirements.trim()}
+            disabled={aiState.isGenerating || !requirements.trim()}
             className="flex w-full items-center justify-center gap-2 rounded-md bg-orange-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLoading ? (
+            {aiState.isGenerating ? (
               <>
                 <Loader className="h-4 w-4 animate-spin" />
                 Generating...

@@ -1,6 +1,21 @@
 import { GoogleGenAI } from '@google/genai';
 import { Block, Prompt, JsonBuilderType, ParaphraseMode } from '../types';
 
+const getThinkingConfig = (modelId: string) => {
+  if (modelId.includes('gemini-3')) {
+    return {
+      includeThoughts: true,
+    };
+  }
+  if (modelId.includes('gemini-2.5')) {
+    return {
+      includeThoughts: true,
+      thinkingBudget: 2048,
+    };
+  }
+  return undefined;
+};
+
 export async function streamImprovedText(
   apiKey: string,
   modelId: string,
@@ -32,7 +47,11 @@ The specific block you need to improve is the one with the type "${blockToImprov
 ${blockToImprove.content}
 ---
 
-Please provide **only** the improved text for this specific block. Do not add any preamble, explanation, or markdown formatting. Your output should be a direct replacement for the original block's content.`;
+Please provide only the improved text for this specific block.
+Do not add any preamble or explanation.
+Do not use markdown formatting of any kind (no backticks, no asterisks, no bold, no italics, no lists, no headers).
+Output plain text only.
+Your output should be a direct replacement for the original block's content.`;
 
   const result = await ai.models.generateContentStream({
     model: modelId,
@@ -54,7 +73,7 @@ export async function streamPromptGeneration(
   temperature: number,
   topP: number,
   requirements: string,
-  onStream: (chunk: string) => void
+  onStream: (chunk: string, thoughts: string) => void
 ): Promise<void> {
   const ai = new GoogleGenAI({ apiKey });
 
@@ -96,16 +115,47 @@ Analyze the following dataset...
 
 Generate the prompt now.`;
 
+  const thinkingConfig = getThinkingConfig(modelId);
+
+  const config: any = {
+    temperature,
+    topP,
+  };
+
+  if (thinkingConfig) {
+    config.thinkingConfig = thinkingConfig;
+  }
+
   const result = await ai.models.generateContentStream({
     model: modelId,
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    config: { temperature, topP },
+    config: config,
   });
 
   for await (const chunk of result) {
-    const chunkText = chunk.text;
-    if (typeof chunkText === 'string') {
-      onStream(chunkText);
+    let chunkText = '';
+    let chunkThought = '';
+
+    const parts = (chunk as any).candidates?.[0]?.content?.parts || [];
+
+    for (const part of parts) {
+      const isThought = part.thought === true || typeof part.thought === 'string';
+
+      if (isThought) {
+        if (typeof part.thought === 'string') {
+          chunkThought += part.thought;
+        } else if (part.text) {
+          chunkThought += part.text;
+        }
+      } else {
+        if (part.text) {
+          chunkText += part.text;
+        }
+      }
+    }
+
+    if (chunkText || chunkThought) {
+      onStream(chunkText, chunkThought);
     }
   }
 }
@@ -136,18 +186,18 @@ Input: “${description}”
   - background
   - lighting
 
-  Dynamic fields (inferred to enrich scene and motion):  
-  - character_count (int)  
-  - atmosphere (string)  
-  - color_theme (string)  
-  - time_setting (string)  
-  - object_details (array of { type, quantity })  
-  - behavior_profiles (array of { object_type, behavior, speed, path })  
-  - interactions (array of { subject, object, interaction_type })  
-  - camera_movement (string)  
-  - transitions (array of strings)  
-  - soundtrack (string)  
-  - special_effects (array of strings)  
+  Dynamic fields (inferred to enrich scene and motion):
+  - character_count (int)
+  - atmosphere (string)
+  - color_theme (string)
+  - time_setting (string)
+  - object_details (array of { type, quantity })
+  - behavior_profiles (array of { object_type, behavior, speed, path })
+  - interactions (array of { subject, object, interaction_type })
+  - camera_movement (string)
+  - transitions (array of strings)
+  - soundtrack (string)
+  - special_effects (array of strings)
 
 For each behavior_profile, infer how each object moves (e.g. “butterflies fluttering along a spiral path at slow speed”) and for interactions describe how elements relate (e.g. “water ripples reacting to stones thrown”). Populate all fields to fully realize the user’s vision and ensure seed, steps, duration, and frame_rate guarantee identical output each time.`,
     Image: `You are an AI that turns a user's image description into a reproducible, richly detailed JSON for image generation.
@@ -156,24 +206,24 @@ Input: “${description}”
 
 Output: a JSON object containing:
 
-  Base fields (for reproduction):  
-  - prompt_text  
-  - negative_prompt  
-  - style  
-  - resolution  
-  - seed  
-  - steps  
-  - background  
-  - lighting  
+  Base fields (for reproduction):
+  - prompt_text
+  - negative_prompt
+  - style
+  - resolution
+  - seed
+  - steps
+  - background
+  - lighting
 
-  Dynamic fields (inferred from the scene to enrich detail):  
-  - character_count (int)  
-  - atmosphere (string)  
-  - color_theme (string)  
-  - action (string)  
-  - object_details (array of objects with type and quantity)  
-  - time_setting (string)  
-  - special_effects (array of strings)  
+  Dynamic fields (inferred from the scene to enrich detail):
+  - character_count (int)
+  - atmosphere (string)
+  - color_theme (string)
+  - action (string)
+  - object_details (array of objects with type and quantity)
+  - time_setting (string)
+  - special_effects (array of strings)
 
 Populate each field with types and values that match and enhance the user's description. Ensure the seed and steps guarantee identical output each time.`,
     UI: `Generate a JSON object describing a UI component or layout. The user's description is: "${description}". The JSON should represent a tree structure, with fields like "component_name", "properties" (an object of key-value pairs), and "children" (an array of other UI component objects).`,

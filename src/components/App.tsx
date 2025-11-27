@@ -12,23 +12,8 @@ import { cn } from '../utils/cn';
 import { ModelSelectionModal } from './ui/ModelSelectionModal';
 import { JsonBuilderView } from './json-builder/JsonBuilderView';
 import { ParaphraseView } from './paraphrase/ParaphraseView';
+import { AiCreationView } from './editor/AiCreationView'; // Import the new view
 import { AppView } from '../types';
-import { Sparkles } from 'lucide-react';
-
-const AiCreationPlaceholder = () => (
-  <div className="flex flex-1 flex-col items-center justify-center space-y-6 overflow-y-auto bg-black/50 p-8 text-center">
-    <div className="rounded-full border border-neutral-800 bg-neutral-900/50 p-6">
-      <Sparkles className="h-16 w-16 animate-pulse text-orange-500" />
-    </div>
-    <div>
-      <h2 className="text-3xl font-bold tracking-wider text-white">AI PROMPT CREATOR</h2>
-      <p className="mx-auto mt-4 max-w-md font-sans text-lg text-neutral-400">
-        Use the sidebar to describe what you need. The AI will construct a structured prompt for you
-        automatically.
-      </p>
-    </div>
-  </div>
-);
 
 export const App = () => {
   const currentView = usePromptStore((state) => state.currentView);
@@ -98,7 +83,7 @@ export const App = () => {
       case 'paraphrase':
         return <ParaphraseView />;
       case 'ai-create':
-        return <AiCreationPlaceholder />;
+        return <AiCreationView />; // Use the new component
       default:
         return <Editor />;
     }

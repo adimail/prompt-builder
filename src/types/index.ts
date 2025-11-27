@@ -50,6 +50,15 @@ export type AppView =
   | 'paraphrase'
   | 'ai-create';
 
+export interface AiGenerationState {
+  isGenerating: boolean;
+  isFinished: boolean;
+  rawContent: string;
+  thoughts: string;
+  generatedBlocks: Block[];
+  generatedName: string | null;
+}
+
 export interface PersistedState {
   currentView: AppView;
   prompts: Prompt[];
@@ -57,6 +66,7 @@ export interface PersistedState {
 }
 
 export interface AppState extends PersistedState {
+  aiState: AiGenerationState;
   actions: AppActions;
 }
 
@@ -78,4 +88,14 @@ export interface AppActions {
   reorderBlocks: (draggedId: string, targetId: string | null) => void;
   toggleBlockCollapse: (blockId: string) => void;
   setBlocks: (promptId: string, blocks: Block[]) => void;
+  startAiGeneration: () => void;
+  updateAiGeneration: (
+    content: string,
+    blocks: Block[],
+    name: string | null,
+    thoughts?: string
+  ) => void;
+  finishAiGeneration: () => void;
+  resetAiGeneration: () => void;
+  confirmAiGeneration: () => void;
 }
